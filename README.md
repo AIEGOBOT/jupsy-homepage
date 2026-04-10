@@ -10,8 +10,8 @@ JUPSY company homepage
 
 ## Asset Structure
 
-- `works/IMAGE/`: works image assets
-- `works/VIDEO/`: works motion preview assets
+- `works/image/`: works image assets
+- `works/video/`: works motion preview assets
 - `team/`: about page team profile images
 
 ## Works Video Rule
