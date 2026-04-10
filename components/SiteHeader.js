@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
 
-export default function SiteHeader({ active }) {
+export default function SiteHeader({ active, onContactClick }) {
   return (
     <header className="site-header">
       <div className="wrap header-inner">
@@ -18,9 +20,15 @@ export default function SiteHeader({ active }) {
             WORKS
           </Link>
         </nav>
-        <Link className="contact-btn" href="/#contact">
-          Contact Us
-        </Link>
+        {onContactClick ? (
+          <button type="button" className="contact-btn" onClick={onContactClick}>
+            Contact Us
+          </button>
+        ) : (
+          <Link className="contact-btn" href="/#contact">
+            Contact Us
+          </Link>
+        )}
       </div>
     </header>
   );
