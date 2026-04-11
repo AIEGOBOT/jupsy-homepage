@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { startTransition, useDeferredValue, useEffect, useState } from "react";
 
 import { worksFilters, worksItems } from "../app/works/works-data";
@@ -48,6 +49,27 @@ function HomeWorkCard({ item }) {
     "9:16": "is-aspect-portrait",
   };
   const aspectClass = aspectClassMap[item.aspect] || "is-aspect-square";
+  const detailHref = item.detailSlug ? `/works/${item.detailSlug}` : null;
+
+  if (detailHref) {
+    return (
+      <article className={`home-work-card ${aspectClass}`}>
+        <Link className="home-work-link" href={detailHref} aria-label={`${item.title} 작업 자세히 보기`}>
+          <div className="home-work-media">
+            {isVideo ? (
+              <video src={item.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
+            ) : (
+              <img src={item.imageSrc} alt={item.imageAlt} />
+            )}
+          </div>
+          <div className="home-work-meta">
+            <span className="home-work-type">{item.typeLabel}</span>
+            <h3>{item.title}</h3>
+          </div>
+        </Link>
+      </article>
+    );
+  }
 
   if (!isVideo) {
     return (
