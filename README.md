@@ -73,6 +73,9 @@ Copy `.env.example` to `.env.local` before testing PayPal flows.
 - Subpages do not open the modal directly; their header/footer contact links navigate back to the home contact anchor.
 - The inquiry modal currently collects contact fields and embeds a PayPal checkout scaffold in the same panel.
 - Works filtering supports `All`, `Photography`, and `Cinematography`.
+- The home portfolio grid is fixed to `3 columns` with equal card widths.
+- Home portfolio cards currently use only these aspect keys from `works-data.js`: `1:1`, `4:3`, `16:9`, `9:16`.
+- In the home portfolio grid, `9:16` items span `2 rows`; all other aspect types use `1 row`.
 - Video works use local `WEBM` previews and open external links such as YouTube on click.
 - Team cards on `/about` use real images where available, while `Han` and `Susie` remain intentionally image-free cards.
 
@@ -80,11 +83,13 @@ Copy `.env.example` to `.env.local` before testing PayPal flows.
 
 - Keep asset directory names lowercase under `public/`
 - Keep new portfolio entries in `app/works/works-data.js` instead of hardcoding them into page components
+- When adding home portfolio items, always set an `aspect` value in `app/works/works-data.js`
+- Allowed home portfolio aspect values are only `1:1`, `4:3`, `16:9`, and `9:16`
 - Prefer lightweight web-ready images and `WEBM` previews for portfolio media
 - Deployment targets such as Linux/Vercel are case-sensitive, so file names and import paths must match exactly
 
 ## Next Session Reminder
 
-- If new works are added, update `app/works/works-data.js` first and only adjust layout CSS when the existing mosaic classes are not enough
+- If new works are added, update `app/works/works-data.js` first and keep the home portfolio within the current aspect rules unless the grid system itself is intentionally being redesigned
 - If PayPal is being activated, test `create-order` and `capture-order` with sandbox credentials before switching to live
 - If navigation is changed later, keep in mind that the current header intentionally mixes in-page anchors and dedicated routes

@@ -215,19 +215,26 @@ export default function HomePageClient() {
       <main className="home-page">
         <section className="home-hero-section" id="home">
           <div className="home-hero-shell">
-            <div className="home-hero-stage" aria-hidden="true">
-              <div className="home-hero-glow"></div>
-              <div className="home-hero-haze"></div>
-              <div className="home-hero-floor"></div>
+            <div className="home-hero-top">
+              <div className="wrap home-hero-top-inner">
+                <div className="home-hero-copy">
+                  <div className="home-hero-brand-block">
+                    <span className="home-hero-brand">JUPSY</span>
+                    <span className="home-hero-title">AI 크리에이티브 스튜디오</span>
+                  </div>
+                  <div className="eyebrow home-hero-kicker">AI Visual Solution</div>
+                </div>
+              </div>
             </div>
 
-            <div className="wrap home-hero-inner">
-              <div className="home-hero-copy">
-                <div className="eyebrow home-hero-kicker">AI Visual Solution</div>
-                <h1>
-                  <span className="home-hero-brand">JUPSY</span>
-                  <span className="home-hero-title">AI 크리에이티브 스튜디오</span>
-                </h1>
+            <div className="home-hero-bottom">
+              <div className="home-hero-stage" aria-hidden="true">
+                <div className="home-hero-glow"></div>
+                <div className="home-hero-haze"></div>
+                <div className="home-hero-floor"></div>
+              </div>
+
+              <div className="wrap home-hero-bottom-inner">
                 <div className="home-hero-actions">
                   <button type="button" className="contact-btn hero-primary-btn" onClick={() => openModal("image")}>
                     이미지 제작 의뢰
@@ -309,9 +316,9 @@ export default function HomePageClient() {
             </div>
 
             <div className="home-works-footer">
-              <a className="ghost-link home-works-archive-link" href="/works">
-                전체 작업 아카이브
-              </a>
+              <button type="button" className="home-works-inquiry-btn" onClick={() => openModal("general")}>
+                의뢰하기
+              </button>
             </div>
           </div>
         </section>
