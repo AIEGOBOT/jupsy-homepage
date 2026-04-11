@@ -8,14 +8,11 @@ JUPSY company homepage built with Next.js App Router.
 - `React 19`
 - App Router with a client-driven home page
 - Shared portfolio data for the home page grid
-- Route Handlers for PayPal order create/capture scaffolding
 
 ## Routes
 
 - `/`: home page with hero, client marquee, works preview, and inquiry modal
 - `/about`: studio introduction and team page
-- `/api/paypal/create-order`: PayPal order creation route
-- `/api/paypal/capture-order`: PayPal order capture route
 
 ## Project Structure
 
@@ -25,12 +22,10 @@ JUPSY company homepage built with Next.js App Router.
 - `app/works/works-data.js`: shared works filters and item data for the home portfolio
 - `app/globals.css`: global stylesheet entry
 - `app/site.css`: shared site styles for all pages
-- `components/HomePageClient.js`: home UI, client marquee, works preview, inquiry modal, PayPal panel
-- `components/PayPalCheckout.js`: PayPal button scaffold
+- `components/HomePageClient.js`: home UI, client marquee, works preview, inquiry modal
 - `components/SiteHeader.js`: shared header with route-aware anchors
 - `components/SiteFooter.js`: shared footer with contact anchor
-- `lib/paypal.js`: PayPal API helper functions
-- `.env.example`: PayPal environment variable template
+- `.env.example`: local environment variable template
 - `public/clients/`: client logo assets for the marquee
 - `public/home/`: home preview card assets
 - `public/team/`: team profile images
@@ -50,30 +45,19 @@ Default local address:
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` before testing PayPal flows.
-
-- `PAYPAL_ENV`: `sandbox` or `live`
-- `PAYPAL_CLIENT_ID`: server-side PayPal client id
-- `PAYPAL_CLIENT_SECRET`: server-side PayPal client secret
-- `NEXT_PUBLIC_PAYPAL_CLIENT_ID`: browser PayPal client id
-- `NEXT_PUBLIC_PAYPAL_CURRENCY`: default checkout currency
-- `PAYPAL_DEFAULT_AMOUNT`: default server-side amount
-- `NEXT_PUBLIC_PAYPAL_DEFAULT_AMOUNT`: default amount shown in the inquiry modal
-
-`NEXT_PUBLIC_PAYPAL_CLIENT_ID` and `NEXT_PUBLIC_PAYPAL_DEFAULT_AMOUNT` are written in `.env.example` as references to the server-side values.
+Copy `.env.example` to `.env.local` if local-only variables are needed later.
 
 ## Current Implementation Notes
 
 - Main header navigation uses `/#home` and `/#works` anchors for `HOME` and `WORKS`, while `ABOUT` stays on its own route.
 - The home page opens a shared inquiry modal from `Contact Us`, `이미지 제작 의뢰`, and `영상 제작 의뢰`.
-- Subpages do not open the modal directly; their header/footer contact links navigate back to the home contact anchor.
-- The inquiry modal currently collects contact fields and embeds a PayPal checkout scaffold in the same panel.
+- The about page also opens the shared inquiry modal directly from its header, footer, and CTA.
 - Works filtering supports `All`, `Photography`, and `Cinematography`.
 - The home portfolio grid is fixed to `3 columns` with equal card widths.
 - Home portfolio cards currently use only these aspect keys from `works-data.js`: `1:1`, `4:3`, `16:9`, `9:16`.
 - In the home portfolio grid, `9:16` items span `2 rows`; all other aspect types use `1 row`.
 - Video works use local `WEBM` previews and open external links such as YouTube on click.
-- Team cards on `/about` use real images where available, while `Han` and `Susie` remain intentionally image-free cards.
+- Team cards on `/about` use the current text-first member grid layout.
 
 ## Asset Rules
 
@@ -87,5 +71,4 @@ Copy `.env.example` to `.env.local` before testing PayPal flows.
 ## Next Session Reminder
 
 - If new works are added, update `app/works/works-data.js` first and keep the home portfolio within the current aspect rules unless the grid system itself is intentionally being redesigned
-- If PayPal is being activated, test `create-order` and `capture-order` with sandbox credentials before switching to live
 - If navigation is changed later, keep in mind that the current header intentionally mixes in-page anchors and dedicated routes

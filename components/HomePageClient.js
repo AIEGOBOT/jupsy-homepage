@@ -3,15 +3,9 @@
 import { startTransition, useDeferredValue, useEffect, useState } from "react";
 
 import { worksFilters, worksItems } from "../app/works/works-data";
-import PayPalCheckout from "./PayPalCheckout";
+import ContactModal from "./ContactModal";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
-
-const inquiryOptions = [
-  { value: "general", label: "일반 문의" },
-  { value: "image", label: "이미지 제작 의뢰" },
-  { value: "video", label: "영상 제작 의뢰" },
-];
 
 const clientLogos = [
   { name: "KBS", src: "/clients/kbs.png", variant: "mark" },
@@ -44,125 +38,6 @@ const heroSlides = [
     videoSrc: "/works/video/gen-ai-seoul-opening.webm",
   },
 ];
-
-function ContactModal({ isOpen, onClose, inquiryType, setInquiryType }) {
-  const [paymentAmount, setPaymentAmount] = useState(process.env.NEXT_PUBLIC_PAYPAL_DEFAULT_AMOUNT || "50.00");
-
-  useEffect(() => {
-    if (!isOpen) {
-      return undefined;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) {
-    return null;
-  }
-
-  return (
-    <div className="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
-      <button type="button" className="contact-modal-backdrop" aria-label="문의 창 닫기" onClick={onClose}></button>
-      <div className="contact-modal-panel">
-        <button type="button" className="contact-modal-close" aria-label="문의 창 닫기" onClick={onClose}>
-          ×
-        </button>
-
-        <div className="contact-modal-head">
-          <div className="eyebrow">Contact</div>
-          <h2 id="contact-modal-title">프로젝트 문의</h2>
-          <p>연락처와 작업 조건을 남겨주시면 이미지 또는 영상 제작 방향을 빠르게 확인할 수 있습니다.</p>
-        </div>
-
-        <form className="contact-form">
-          <label className="contact-field">
-            <span>문의 유형</span>
-            <select value={inquiryType} onChange={(event) => setInquiryType(event.target.value)}>
-              {inquiryOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="contact-field">
-            <span>연락처</span>
-            <input type="text" placeholder="이메일 또는 전화번호" />
-          </label>
-
-          <label className="contact-field">
-            <span>브랜드명 / 회사명</span>
-            <input type="text" placeholder="브랜드 또는 회사명을 입력해 주세요" />
-          </label>
-
-          <label className="contact-field">
-            <span>희망 단가</span>
-            <input type="text" placeholder="예: 100만 원대 / 협의 가능" />
-          </label>
-
-          <label className="contact-field">
-            <span>PayPal 결제 금액</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={paymentAmount}
-              onChange={(event) => setPaymentAmount(event.target.value)}
-              placeholder="예: 50.00"
-            />
-          </label>
-
-          <label className="contact-field">
-            <span>희망 납기</span>
-            <input type="text" placeholder="예: 4월 말 / 일정 협의 가능" />
-          </label>
-
-          <label className="contact-field contact-field-full">
-            <span>의뢰 내용</span>
-            <textarea
-              rows="6"
-              placeholder="원하는 작업 범위, 레퍼런스 분위기, 필요한 산출물, 사용 목적 등을 자유롭게 적어 주세요"
-            ></textarea>
-          </label>
-
-          <div className="contact-form-note">실제 접수 연결은 다음 단계에서 붙일 수 있도록 문의 창 구조부터 먼저 구성했습니다.</div>
-
-          <div className="contact-field-full">
-            <div className="paypal-panel">
-              <div className="paypal-panel-head">
-                <strong>PayPal 결제</strong>
-                <span>프로젝트 선결제 또는 테스트 결제 흐름을 같은 문의 창 안에서 확인할 수 있게 구성했습니다.</span>
-              </div>
-              <PayPalCheckout amount={paymentAmount} />
-            </div>
-          </div>
-
-          <div className="contact-form-actions">
-            <button type="button" className="ghost-btn" onClick={onClose}>
-              닫기
-            </button>
-            <button type="button" className="contact-btn">
-              문의 내용 작성 완료
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 function HomeWorkCard({ item }) {
   const isVideo = item.kind === "video";
@@ -343,7 +218,7 @@ export default function HomePageClient() {
         <section className="home-works-section" id="works">
           <div className="wrap home-works-shell">
             <div className="home-works-head">
-              <div className="eyebrow">Portfolio</div>
+              <div className="eyebrow">Works</div>
               <h2>접시와 함께한 대표 프로젝트를 직접 확인해보세요.</h2>
             </div>
 
