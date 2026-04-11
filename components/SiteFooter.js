@@ -9,7 +9,7 @@ export default function SiteFooter() {
         </Link>
         <div className="footer-links">
           <Link href="/#contact">CONTACT</Link>
-          <Link href="/works">WORKS</Link>
+          <Link href="/#works">WORKS</Link>
           <Link href="/about">ABOUT</Link>
         </div>
         <div>&copy; 2026 JEOPSI STUDIO. ALL RIGHTS RESERVED.</div>

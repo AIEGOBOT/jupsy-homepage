@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { startTransition, useDeferredValue, useEffect, useState } from "react";
 
+import { worksFilters, worksItems } from "../app/works/works-data";
 import PayPalCheckout from "./PayPalCheckout";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
@@ -11,6 +12,26 @@ const inquiryOptions = [
   { value: "image", label: "이미지 제작 의뢰" },
   { value: "video", label: "영상 제작 의뢰" },
 ];
+
+const clientLogos = [
+  { name: "KBS", src: "/clients/kbs.png", variant: "mark" },
+  { name: "MBC", src: "/clients/mbc.png" },
+  { name: "SBS", src: "/clients/sbs.ico", variant: "mark" },
+  { name: "행복을 파는 사람들", src: "/clients/hangpasa.png" },
+  { name: "홍동비책", src: "/clients/hongdong.png" },
+  { name: "정성곳간", src: "/clients/jeongseong.png" },
+  { name: "신한은행", src: "/clients/shinhan.ico", variant: "mark" },
+  { name: "국가과학기술인력개발원", src: "/clients/kird.svg" },
+  { name: "CLASS101", src: "/clients/class101.png" },
+  { name: "HD현대", src: "/clients/hdhyundai.png" },
+  { name: "신세계", src: "/clients/shinsegae.png" },
+  { name: "Invideo", src: "/clients/invideo.svg" },
+  { name: "TV조선", src: "/clients/tvchosun.png", variant: "mark" },
+  { name: "고려대학교", src: "/clients/korea.png" },
+  { name: "한라대학교", src: "/clients/halla.png" },
+];
+const clientMarqueePrimary = [...clientLogos, ...clientLogos];
+const clientMarqueeSecondary = [...clientLogos].reverse().concat([...clientLogos].reverse());
 
 function ContactModal({ isOpen, onClose, inquiryType, setInquiryType }) {
   const [paymentAmount, setPaymentAmount] = useState(process.env.NEXT_PUBLIC_PAYPAL_DEFAULT_AMOUNT || "50.00");
@@ -131,89 +152,169 @@ function ContactModal({ isOpen, onClose, inquiryType, setInquiryType }) {
   );
 }
 
+function HomeWorkCard({ item }) {
+  const isVideo = item.kind === "video";
+  const href = isVideo ? item.href : "/works";
+  const isExternal = isVideo;
+  const aspectClassMap = {
+    "1:1": "is-aspect-square",
+    "4:3": "is-aspect-landscape",
+    "16:9": "is-aspect-wide",
+    "9:16": "is-aspect-portrait",
+  };
+  const aspectClass = aspectClassMap[item.aspect] || "is-aspect-square";
+
+  return (
+    <article className={`home-work-card ${aspectClass}${isVideo ? " is-video" : ""}`}>
+      <a
+        className="home-work-link"
+        href={href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noreferrer" : undefined}
+        aria-label={isVideo ? item.ariaLabel : `${item.title} 작업 보기`}
+      >
+        <div className="home-work-media">
+          {isVideo ? (
+            <video src={item.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
+          ) : (
+            <img src={item.imageSrc} alt={item.imageAlt} />
+          )}
+        </div>
+        <div className="home-work-meta">
+          <span className="home-work-type">{item.typeLabel}</span>
+          <h3>{item.title}</h3>
+        </div>
+      </a>
+    </article>
+  );
+}
+
 export default function HomePageClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inquiryType, setInquiryType] = useState("general");
+  const [activeFilter, setActiveFilter] = useState("all");
+  const deferredFilter = useDeferredValue(activeFilter);
+  const filteredWorks =
+    deferredFilter === "all" ? worksItems : worksItems.filter((item) => item.category === deferredFilter);
 
   const openModal = (type) => {
     setInquiryType(type);
     setIsModalOpen(true);
   };
 
+  const handleFilterChange = (nextFilter) => {
+    startTransition(() => {
+      setActiveFilter(nextFilter);
+    });
+  };
+
   return (
     <>
       <SiteHeader active="home" onContactClick={() => openModal("general")} />
 
-      <main className="hero">
-        <div className="wrap">
-          <div className="hero-top">
-            <div>
-              <div className="eyebrow">AI Visual Solutions</div>
-              <h1>
-                <span className="solid">The Future of</span>
-                <span className="thin">AI Creative</span>
-                <span className="solid">Production.</span>
-              </h1>
+      <main className="home-page">
+        <section className="home-hero-section" id="home">
+          <div className="home-hero-shell">
+            <div className="home-hero-stage" aria-hidden="true">
+              <div className="home-hero-glow"></div>
+              <div className="home-hero-haze"></div>
+              <div className="home-hero-floor"></div>
             </div>
-            <div className="hero-copy">
-              회사 소개 중심의 메인 페이지에서 AI 이미지 제작 의뢰와 AI 영상 제작 의뢰를 가장 먼저 선택할 수 있게
-              구성했습니다. 빠른 제작, 높은 활용도, 납품 가능한 결과물을 핵심 메시지로 둡니다.
+
+            <div className="wrap home-hero-inner">
+              <div className="home-hero-copy">
+                <div className="eyebrow home-hero-kicker">AI Visual Solution</div>
+                <h1>
+                  <span className="home-hero-brand">JUPSY</span>
+                  <span className="home-hero-title">AI 크리에이티브 스튜디오</span>
+                </h1>
+                <div className="home-hero-actions">
+                  <button type="button" className="contact-btn hero-primary-btn" onClick={() => openModal("image")}>
+                    이미지 제작 의뢰
+                  </button>
+                  <button type="button" className="hero-secondary-btn" onClick={() => openModal("video")}>
+                    영상 제작 의뢰
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
+        </section>
 
-          <section className="cards" id="services">
-            <article className="card image">
-              <div className="card-visual"></div>
-              <div className="card-top">
-                <h2>Image Request</h2>
-                <p>광고 비주얼, 뷰티컷, 상세페이지용 이미지, 브랜드 제안용 크리에이티브를 빠르게 제작합니다.</p>
-              </div>
-              <button type="button" className="card-btn" onClick={() => openModal("image")}>
-                이미지 제작 의뢰
-              </button>
-            </article>
-
-            <article className="card video">
-              <div className="card-visual"></div>
-              <div className="card-top">
-                <h2>Video Request</h2>
-                <p>제품 소개 영상, 짧은 광고 영상, SNS용 모션 클립 등 브랜드 목적에 맞는 영상 제작 의뢰를 받습니다.</p>
-              </div>
-              <button type="button" className="card-btn" onClick={() => openModal("video")}>
-                영상 제작 의뢰
-              </button>
-            </article>
-          </section>
-
-          <section className="clients" id="about">
-            <div className="clients-head">
-              <span className="client-kicker">Clients</span>
-              <span className="clients-title">Selected partners and brands</span>
-            </div>
-            <div className="clients-track">
-              <div className="clients-row" aria-hidden="true">
-                <span className="client-pill">Amuse</span>
-                <span className="client-pill">Laneige</span>
-                <span className="client-pill">Olive Young</span>
-                <span className="client-pill">Musinsa</span>
-                <span className="client-pill">29CM</span>
-                <span className="client-pill">W Concept</span>
-                <span className="client-pill">Gentle Monster</span>
-                <span className="client-pill">Tamburins</span>
-              </div>
-              <div className="clients-row" aria-hidden="true">
-                <span className="client-pill">Amuse</span>
-                <span className="client-pill">Laneige</span>
-                <span className="client-pill">Olive Young</span>
-                <span className="client-pill">Musinsa</span>
-                <span className="client-pill">29CM</span>
-                <span className="client-pill">W Concept</span>
-                <span className="client-pill">Gentle Monster</span>
-                <span className="client-pill">Tamburins</span>
+        <section className="home-clients-section">
+          <div className="home-clients-shell">
+            <div className="wrap">
+              <div className="home-section-head home-clients-intro">
+                <div className="eyebrow">Clients</div>
+                <p>
+                  접시는 생성 자체보다 결과물의 쓰임을 더 중요하게 봅니다. 브랜드 성격과 캠페인 목적에 맞는 무드를 빠르게
+                  정리하고, 실제 다음 단계로 이어질 수 있는 시각 언어를 정돈합니다.
+                </p>
               </div>
             </div>
-          </section>
-        </div>
+
+            <div className="home-clients-marquee-shell">
+              <div className="home-clients-marquee">
+                <div className="home-clients-track home-clients-track-forward" aria-hidden="true">
+                  {clientMarqueePrimary.map((client, index) => (
+                    <span
+                      key={`${client.name}-forward-${index}`}
+                      className={`home-client-pill${client.variant ? ` is-${client.variant}` : ""}`}
+                    >
+                      <img src={client.src} alt={client.name} loading="lazy" />
+                    </span>
+                  ))}
+                </div>
+
+                <div className="home-clients-track home-clients-track-reverse" aria-hidden="true">
+                  {clientMarqueeSecondary.map((client, index) => (
+                    <span
+                      key={`${client.name}-reverse-${index}`}
+                      className={`home-client-pill${client.variant ? ` is-${client.variant}` : ""}`}
+                    >
+                      <img src={client.src} alt={client.name} loading="lazy" />
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="home-works-section" id="works">
+          <div className="wrap home-works-shell">
+            <div className="home-works-head">
+              <div className="eyebrow">Portfolio</div>
+              <h2>접시와 함께한 대표 프로젝트를 직접 확인해보세요.</h2>
+            </div>
+
+            <div className="home-works-filters" aria-label="홈 포트폴리오 카테고리">
+              {worksFilters.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  className={`home-works-filter-pill${activeFilter === filter.id ? " is-active" : ""}`}
+                  onClick={() => handleFilterChange(filter.id)}
+                  aria-pressed={activeFilter === filter.id}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+
+            <div key={deferredFilter} className="home-works-grid">
+              {filteredWorks.map((item) => (
+                <HomeWorkCard key={item.id} item={item} />
+              ))}
+            </div>
+
+            <div className="home-works-footer">
+              <a className="ghost-link home-works-archive-link" href="/works">
+                전체 작업 아카이브
+              </a>
+            </div>
+          </div>
+        </section>
       </main>
 
       <SiteFooter />
