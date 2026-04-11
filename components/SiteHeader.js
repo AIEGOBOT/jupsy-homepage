@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export default function SiteHeader({ active, onContactClick }) {
-  const pathname = usePathname();
-  const sectionPrefix = pathname === "/" ? "" : "/";
+  const sectionPrefix = "/";
   const navItems = [
     { id: "home", label: "HOME", href: `${sectionPrefix}#home` },
     { id: "works", label: "WORKS", href: `${sectionPrefix}#works` },
