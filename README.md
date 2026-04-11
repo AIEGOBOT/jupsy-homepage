@@ -7,14 +7,13 @@ JUPSY company homepage built with Next.js App Router.
 - `Next.js 16`
 - `React 19`
 - App Router with a client-driven home page
-- Shared portfolio data for home and works pages
+- Shared portfolio data for the home page grid
 - Route Handlers for PayPal order create/capture scaffolding
 
 ## Routes
 
 - `/`: home page with hero, client marquee, works preview, and inquiry modal
 - `/about`: studio introduction and team page
-- `/works`: full portfolio gallery page
 - `/api/paypal/create-order`: PayPal order creation route
 - `/api/paypal/capture-order`: PayPal order capture route
 
@@ -23,12 +22,10 @@ JUPSY company homepage built with Next.js App Router.
 - `app/layout.js`: root layout, metadata, and font loading
 - `app/page.js`: home page entry
 - `app/about/page.js`: about page
-- `app/works/page.js`: works archive page
-- `app/works/works-data.js`: shared works filters and item data
+- `app/works/works-data.js`: shared works filters and item data for the home portfolio
 - `app/globals.css`: global stylesheet entry
 - `app/site.css`: shared site styles for all pages
 - `components/HomePageClient.js`: home UI, client marquee, works preview, inquiry modal, PayPal panel
-- `components/WorksGallery.js`: filterable works gallery
 - `components/PayPalCheckout.js`: PayPal button scaffold
 - `components/SiteHeader.js`: shared header with route-aware anchors
 - `components/SiteFooter.js`: shared footer with contact anchor
@@ -68,7 +65,6 @@ Copy `.env.example` to `.env.local` before testing PayPal flows.
 ## Current Implementation Notes
 
 - Main header navigation uses `/#home` and `/#works` anchors for `HOME` and `WORKS`, while `ABOUT` stays on its own route.
-- A dedicated `/works` page still exists and uses the same `works-data.js` source as the home works preview.
 - The home page opens a shared inquiry modal from `Contact Us`, `이미지 제작 의뢰`, and `영상 제작 의뢰`.
 - Subpages do not open the modal directly; their header/footer contact links navigate back to the home contact anchor.
 - The inquiry modal currently collects contact fields and embeds a PayPal checkout scaffold in the same panel.

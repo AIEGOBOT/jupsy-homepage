@@ -8,8 +8,8 @@ export default function SiteHeader({ active, onContactClick }) {
   const sectionPrefix = pathname === "/" ? "" : "/";
   const navItems = [
     { id: "home", label: "HOME", href: `${sectionPrefix}#home` },
-    { id: "about", label: "ABOUT", href: "/about" },
     { id: "works", label: "WORKS", href: `${sectionPrefix}#works` },
+    { id: "about", label: "ABOUT", href: "/about" },
   ];
 
   return (
@@ -27,11 +27,11 @@ export default function SiteHeader({ active, onContactClick }) {
         </nav>
         {onContactClick ? (
           <button type="button" className="contact-btn" onClick={onContactClick}>
-            Contact Us
+            문의하기
           </button>
         ) : (
           <Link className="contact-btn" href={`${sectionPrefix}#contact`}>
-            Contact Us
+            문의하기
           </Link>
         )}
       </div>

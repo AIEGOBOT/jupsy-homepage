@@ -165,7 +165,7 @@ export default function AboutPage() {
               <a className="contact-btn" href="/#contact">
                 Work With JUPSY
               </a>
-              <a className="ghost-link" href="/works">
+              <a className="ghost-link" href="/#works">
                 View Our Portfolio
               </a>
             </div>

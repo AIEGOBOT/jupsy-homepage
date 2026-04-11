@@ -32,6 +32,18 @@ const clientLogos = [
 ];
 const clientMarqueePrimary = [...clientLogos, ...clientLogos];
 const clientMarqueeSecondary = [...clientLogos].reverse().concat([...clientLogos].reverse());
+const heroSlides = [
+  {
+    id: "kbs",
+    title: "KBS",
+    videoSrc: "/works/video/kbs-happy-future.webm",
+  },
+  {
+    id: "genai",
+    title: "GEN AI SEOUL",
+    videoSrc: "/works/video/gen-ai-seoul-opening.webm",
+  },
+];
 
 function ContactModal({ isOpen, onClose, inquiryType, setInquiryType }) {
   const [paymentAmount, setPaymentAmount] = useState(process.env.NEXT_PUBLIC_PAYPAL_DEFAULT_AMOUNT || "50.00");
@@ -154,8 +166,6 @@ function ContactModal({ isOpen, onClose, inquiryType, setInquiryType }) {
 
 function HomeWorkCard({ item }) {
   const isVideo = item.kind === "video";
-  const href = isVideo ? item.href : "/works";
-  const isExternal = isVideo;
   const aspectClassMap = {
     "1:1": "is-aspect-square",
     "4:3": "is-aspect-landscape",
@@ -164,21 +174,33 @@ function HomeWorkCard({ item }) {
   };
   const aspectClass = aspectClassMap[item.aspect] || "is-aspect-square";
 
+  if (!isVideo) {
+    return (
+      <article className={`home-work-card ${aspectClass}`}>
+        <div className="home-work-link is-static" aria-label={`${item.title} 작업 썸네일`}>
+          <div className="home-work-media">
+            <img src={item.imageSrc} alt={item.imageAlt} />
+          </div>
+          <div className="home-work-meta">
+            <span className="home-work-type">{item.typeLabel}</span>
+            <h3>{item.title}</h3>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
-    <article className={`home-work-card ${aspectClass}${isVideo ? " is-video" : ""}`}>
+    <article className={`home-work-card ${aspectClass} is-video`}>
       <a
         className="home-work-link"
-        href={href}
-        target={isExternal ? "_blank" : undefined}
-        rel={isExternal ? "noreferrer" : undefined}
-        aria-label={isVideo ? item.ariaLabel : `${item.title} 작업 보기`}
+        href={item.href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={item.ariaLabel}
       >
         <div className="home-work-media">
-          {isVideo ? (
-            <video src={item.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
-          ) : (
-            <img src={item.imageSrc} alt={item.imageAlt} />
-          )}
+          <video src={item.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
         </div>
         <div className="home-work-meta">
           <span className="home-work-type">{item.typeLabel}</span>
@@ -193,9 +215,20 @@ export default function HomePageClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inquiryType, setInquiryType] = useState("general");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [activeHeroSlide, setActiveHeroSlide] = useState(0);
   const deferredFilter = useDeferredValue(activeFilter);
   const filteredWorks =
     deferredFilter === "all" ? worksItems : worksItems.filter((item) => item.category === deferredFilter);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setActiveHeroSlide((current) => (current + 1) % heroSlides.length);
+    }, 7000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   const openModal = (type) => {
     setInquiryType(type);
@@ -228,10 +261,16 @@ export default function HomePageClient() {
             </div>
 
             <div className="home-hero-bottom">
-              <div className="home-hero-stage" aria-hidden="true">
-                <div className="home-hero-glow"></div>
-                <div className="home-hero-haze"></div>
-                <div className="home-hero-floor"></div>
+              <div className="home-hero-media" aria-hidden="true">
+                {heroSlides.map((slide, index) => (
+                  <div
+                    key={slide.id}
+                    className={`home-hero-slide${index === activeHeroSlide ? " is-active" : ""}`}
+                  >
+                    <video src={slide.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
+                  </div>
+                ))}
+                <div className="home-hero-stage"></div>
               </div>
 
               <div className="wrap home-hero-bottom-inner">
@@ -242,6 +281,19 @@ export default function HomePageClient() {
                   <button type="button" className="hero-secondary-btn" onClick={() => openModal("video")}>
                     영상 제작 의뢰
                   </button>
+                </div>
+
+                <div className="home-hero-pagination" aria-label="히어로 배경 선택">
+                  {heroSlides.map((slide, index) => (
+                    <button
+                      key={slide.id}
+                      type="button"
+                      className={`home-hero-page-dot${index === activeHeroSlide ? " is-active" : ""}`}
+                      onClick={() => setActiveHeroSlide(index)}
+                      aria-label={`${slide.title} 배경 보기`}
+                      aria-pressed={index === activeHeroSlide}
+                    ></button>
+                  ))}
                 </div>
               </div>
             </div>
