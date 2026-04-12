@@ -190,7 +190,7 @@ a {
   padding: 0;
   border-radius: 0;
   display: grid;
-  grid-template-rows: minmax(180px, 30svh) 1fr;
+  grid-template-rows: minmax(126px, 18svh) 1fr;
   background: linear-gradient(180deg, #07090f 0%, #091118 100%);
   border: 0;
   box-shadow: none;
@@ -217,12 +217,12 @@ a {
   min-height: 100%;
   display: grid;
   align-items: center;
-  padding: 28px 0 18px;
+  padding: 16px 0 8px;
 }
 
 .home-hero-bottom {
   position: relative;
-  min-height: 66svh;
+  min-height: 76svh;
   background: #081019;
 }
 
@@ -256,7 +256,7 @@ a {
 .home-hero-bottom-inner {
   position: relative;
   z-index: 2;
-  min-height: 66svh;
+  min-height: 76svh;
   display: grid;
   grid-template-rows: 1fr auto;
   align-items: center;
@@ -279,7 +279,7 @@ a {
 
 .home-hero-brand-block {
   display: grid;
-  gap: 2px;
+  gap: 10px;
 }
 
 .home-hero-brand {
