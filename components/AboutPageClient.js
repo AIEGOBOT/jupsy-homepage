@@ -165,7 +165,7 @@ export default function AboutPageClient() {
                   문의하기
                 </button>
                 <a className="ghost-link" href="/#works">
-                  작업 보기
+                  작업보기
                 </a>
               </div>
             </div>

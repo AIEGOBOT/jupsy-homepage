@@ -1,0 +1,136 @@
+import nodemailer from "nodemailer";
+
+const inquiryTypeMap = {
+  general: "일반 문의",
+  image: "이미지 제작 의뢰",
+  video: "영상 제작 의뢰",
+};
+
+function valueOrFallback(value) {
+  return value?.trim() ? value.trim() : "-";
+}
+
+function buildInquiryLines(payload) {
+  return [
+    ["문의 유형", inquiryTypeMap[payload.inquiryType] || payload.inquiryType || "-"],
+    ["연락처", valueOrFallback(payload.contact)],
+    ["브랜드명 / 회사명", valueOrFallback(payload.companyName)],
+    ["희망 예산", valueOrFallback(payload.budget)],
+    ["희망 납기", valueOrFallback(payload.deadline)],
+    ["유입 페이지", valueOrFallback(payload.pagePath)],
+    ["의뢰 내용", valueOrFallback(payload.message)],
+  ];
+}
+
+async function sendDiscordWebhook(payload) {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+
+  if (!webhookUrl) {
+    return false;
+  }
+
+  const fields = buildInquiryLines(payload).map(([name, value]) => ({
+    name,
+    value: String(value),
+  }));
+
+  const response = await fetch(webhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: "JUPSY Inquiry Bot",
+      embeds: [
+        {
+          title: "새 의뢰가 접수되었습니다",
+          color: 0x0f172d,
+          fields,
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("디스코드 웹훅 전송에 실패했습니다.");
+  }
+
+  return true;
+}
+
+async function sendEmail(payload) {
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT || 587);
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!host || !port || !user || !pass) {
+    return false;
+  }
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: String(process.env.SMTP_SECURE || "false") === "true",
+    auth: {
+      user,
+      pass,
+    },
+  });
+
+  const to = process.env.INQUIRY_TO_EMAIL || user;
+  const from = process.env.SMTP_FROM_EMAIL || user;
+  const text = buildInquiryLines(payload)
+    .map(([label, value]) => `${label}: ${value}`)
+    .join("\n\n");
+
+  await transporter.sendMail({
+    to,
+    from,
+    replyTo: payload.contact?.trim() || undefined,
+    subject: `[JUPSY] ${inquiryTypeMap[payload.inquiryType] || "새 의뢰"} 접수`,
+    text,
+  });
+
+  return true;
+}
+
+export async function POST(request) {
+  try {
+    const payload = await request.json();
+
+    if (!payload.contact?.trim() || !payload.message?.trim()) {
+      return Response.json({ error: "연락처와 의뢰 내용은 필수입니다." }, { status: 400 });
+    }
+
+    const sentChannels = [];
+
+    if (await sendDiscordWebhook(payload)) {
+      sentChannels.push("discord");
+    }
+
+    if (await sendEmail(payload)) {
+      sentChannels.push("email");
+    }
+
+    if (sentChannels.length === 0) {
+      return Response.json(
+        {
+          error:
+            "서버에 의뢰 수신 채널이 설정되지 않았습니다. DISCORD_WEBHOOK_URL 또는 SMTP 환경변수를 먼저 설정해 주세요.",
+        },
+        { status: 500 }
+      );
+    }
+
+    return Response.json({ ok: true, sentChannels });
+  } catch (error) {
+    return Response.json(
+      {
+        error: error.message || "의뢰 접수 처리 중 오류가 발생했습니다.",
+      },
+      { status: 500 }
+    );
+  }
+}

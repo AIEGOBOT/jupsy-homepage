@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const inquiryOptions = [
   { value: "general", label: "일반 문의" },
@@ -8,7 +8,18 @@ const inquiryOptions = [
   { value: "video", label: "영상 제작 의뢰" },
 ];
 
+const initialFormState = {
+  contact: "",
+  companyName: "",
+  budget: "",
+  deadline: "",
+  message: "",
+};
+
 export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryType }) {
+  const [formValues, setFormValues] = useState(initialFormState);
+  const [submitState, setSubmitState] = useState({ status: "idle", message: "" });
+
   useEffect(() => {
     if (!isOpen) {
       return undefined;
@@ -30,9 +41,58 @@ export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryT
     };
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setSubmitState({ status: "idle", message: "" });
+    }
+  }, [isOpen]);
+
   if (!isOpen) {
     return null;
   }
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormValues((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setSubmitState({ status: "submitting", message: "" });
+
+    try {
+      const response = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inquiryType,
+          ...formValues,
+          pagePath: window.location.pathname,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "의뢰 접수 중 오류가 발생했습니다.");
+      }
+
+      setFormValues(initialFormState);
+      setSubmitState({
+        status: "success",
+        message: "의뢰가 접수되었습니다. 확인 후 입력하신 연락처로 회신드리겠습니다.",
+      });
+    } catch (error) {
+      setSubmitState({
+        status: "error",
+        message: error.message || "의뢰 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+      });
+    }
+  };
+
+  const isSubmitting = submitState.status === "submitting";
 
   return (
     <div className="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
@@ -56,14 +116,14 @@ export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryT
           <div className="contact-modal-main">
             <div className="contact-modal-head">
               <div className="eyebrow">Contact</div>
-              <h2 id="contact-modal-title">문의하기</h2>
+              <h2 id="contact-modal-title">의뢰하기</h2>
               <p>기본 정보와 작업 조건을 남겨주시면 빠르게 검토 후 연락드립니다.</p>
             </div>
 
-            <form className="contact-form">
+            <form className="contact-form" onSubmit={handleSubmit}>
               <label className="contact-field">
                 <span>문의 유형</span>
-                <select value={inquiryType} onChange={(event) => setInquiryType(event.target.value)}>
+                <select value={inquiryType} onChange={(event) => setInquiryType(event.target.value)} disabled={isSubmitting}>
                   {inquiryOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -74,42 +134,80 @@ export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryT
 
               <label className="contact-field">
                 <span>연락처</span>
-                <input type="text" placeholder="이메일 또는 전화번호를 입력해 주세요" />
+                <input
+                  type="text"
+                  name="contact"
+                  value={formValues.contact}
+                  onChange={handleChange}
+                  placeholder="이메일 또는 전화번호를 입력해 주세요"
+                  required
+                  disabled={isSubmitting}
+                />
               </label>
 
               <label className="contact-field">
                 <span>브랜드명 / 회사명</span>
-                <input type="text" placeholder="브랜드 또는 회사명을 입력해 주세요" />
+                <input
+                  type="text"
+                  name="companyName"
+                  value={formValues.companyName}
+                  onChange={handleChange}
+                  placeholder="브랜드 또는 회사명을 입력해 주세요"
+                  disabled={isSubmitting}
+                />
               </label>
 
               <label className="contact-field">
                 <span>희망 예산</span>
-                <input type="text" placeholder="예: 300만 원대 / 협의 가능" />
+                <input
+                  type="text"
+                  name="budget"
+                  value={formValues.budget}
+                  onChange={handleChange}
+                  placeholder="예: 300만 원대 / 협의 가능"
+                  disabled={isSubmitting}
+                />
               </label>
 
               <label className="contact-field">
                 <span>희망 납기</span>
-                <input type="text" placeholder="예: 4월 말 / 일정 협의 가능" />
+                <input
+                  type="text"
+                  name="deadline"
+                  value={formValues.deadline}
+                  onChange={handleChange}
+                  placeholder="예: 4월 말 / 일정 협의 가능"
+                  disabled={isSubmitting}
+                />
               </label>
 
               <label className="contact-field contact-field-full">
                 <span>의뢰 내용</span>
                 <textarea
                   rows="4"
+                  name="message"
+                  value={formValues.message}
+                  onChange={handleChange}
                   placeholder="브랜드, 사용처, 필요한 산출물, 레퍼런스 무드 등 프로젝트에 대한 내용을 자유롭게 적어 주세요"
+                  required
+                  disabled={isSubmitting}
                 ></textarea>
               </label>
 
               <div className="contact-form-note">
-                실제 접수 연결은 다음 단계에서 붙일 수 있도록 문의 창 구조부터 먼저 구성했습니다.
+                디스코드 웹훅 또는 이메일 설정이 완료되어 있으면 제출 즉시 해당 채널로 전달됩니다.
               </div>
 
+              {submitState.message ? (
+                <div className={`contact-form-status is-${submitState.status}`}>{submitState.message}</div>
+              ) : null}
+
               <div className="contact-form-actions">
-                <button type="button" className="ghost-btn" onClick={onClose}>
+                <button type="button" className="ghost-btn" onClick={onClose} disabled={isSubmitting}>
                   취소
                 </button>
-                <button type="button" className="contact-btn">
-                  제출하기
+                <button type="submit" className="contact-btn" disabled={isSubmitting}>
+                  {isSubmitting ? "전송 중..." : "제출하기"}
                 </button>
               </div>
             </form>

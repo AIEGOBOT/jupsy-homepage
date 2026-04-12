@@ -6,6 +6,7 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 
 - `Next.js 16`
 - `React 19`
+- `nodemailer`
 - App Router
 - 공통 포트폴리오 데이터 기반 페이지 구성
 
@@ -22,6 +23,7 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - `app/about/page.js`: 소개 페이지 엔트리
 - `app/works/works-data.js`: 필터, 홈 포트폴리오 데이터, 상세 페이지 데이터
 - `app/works/[slug]/page.js`: 작업 상세 라우트
+- `app/api/inquiry/route.js`: 의뢰 폼 제출을 디스코드 웹훅 또는 SMTP 메일로 전달하는 API
 - `app/globals.css`: 전역 스타일 엔트리
 - `app/site.css`: 사이트 공통 스타일
 - `components/HomePageClient.js`: 홈 UI, 히어로, 클라이언트 영역, 작품 그리드, 모달 연결
@@ -50,7 +52,18 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 
 ## 환경 변수
 
-필요한 경우 `.env.example`을 `.env.local`로 복사해 로컬 전용 값을 추가합니다.
+`.env.example`을 `.env.local`로 복사한 뒤 필요한 채널만 설정합니다.
+
+- `DISCORD_WEBHOOK_URL`: 의뢰 접수 내용을 디스코드로 받을 웹훅 URL
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM_EMAIL`: 발신자 주소, 비워두면 `SMTP_USER` 사용
+- `INQUIRY_TO_EMAIL`: 수신 주소, 비워두면 `SMTP_USER` 사용
+
+의뢰 API는 디스코드 웹훅 또는 SMTP 중 하나 이상이 설정되어 있어야 정상 동작합니다.
 
 ## 현재 구현 상태
 
@@ -60,7 +73,9 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - 홈 히어로 하단 배경은 현재 로컬 영상 에셋을 순환해 사용합니다.
 - 홈과 소개 페이지의 `의뢰하기`는 공통 모달을 엽니다.
 - 의뢰 모달은 왼쪽 정보 패널과 오른쪽 폼 패널로 구성된 2단 레이아웃입니다.
-- 의뢰 폼은 현재 UI만 구현되어 있고 제출 처리 로직은 아직 연결하지 않았습니다.
+- 의뢰 폼은 `/api/inquiry`로 제출되며, 필수값은 연락처와 의뢰 내용입니다.
+- 의뢰 접수는 설정된 채널에 따라 디스코드 웹훅, SMTP 메일 또는 둘 다로 전달됩니다.
+- 제출 중에는 폼 입력이 잠기고, 완료 후 성공 또는 실패 상태 메시지를 표시합니다.
 - 작품 필터는 `All`, `이미지`, `영상`을 지원합니다.
 - 홈 포트폴리오 그리드는 3열 기준으로 유지됩니다.
 - 홈 카드에서 사용하는 비율 키는 `1:1`, `4:3`, `16:9`, `9:16`만 허용합니다.
@@ -72,6 +87,7 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - 상세 히어로에서는 이미지 자체 확대 모션 없이 텍스트 오버레이만 스크롤에 따라 움직입니다.
 - 소개 페이지는 홈과 유사하게 넓게 펼쳐지는 히어로와 텍스트 중심 섹션 구조를 사용합니다.
 - 팀 섹션은 프로필 이미지 없이 텍스트 중심 카드 레이아웃입니다.
+- 푸터는 메일 주소와 인스타그램, 유튜브 외부 링크를 직접 노출합니다.
 
 ## 에셋 규칙
 
@@ -92,4 +108,4 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - 새 상세 페이지가 필요하면 `detailSlug`, `workDetails`, `public/works/projects/<slug>/` 구조를 같이 맞춥니다.
 - 홈 그리드에만 남길 작업이면 `detailSlug`를 추가하지 않습니다.
 - 네비게이션을 다시 바꿀 경우, 현재는 중앙 네비와 좌우 고정 링크가 분리된 구조라는 점을 고려해야 합니다.
-- `dev-server.log` 같은 임시 로컬 파일은 커밋하지 않습니다.
+- `dev-server.log`, `dev-server.err` 같은 임시 로컬 파일은 커밋하지 않습니다.
