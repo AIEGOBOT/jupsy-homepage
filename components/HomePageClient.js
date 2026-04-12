@@ -50,11 +50,13 @@ const heroSlides = [
     id: "kbs",
     title: "KBS",
     videoSrc: "/works/video/kbs-happy-future.webm",
+    objectPosition: "50% 50%",
   },
   {
     id: "genai",
     title: "GEN AI SEOUL",
     videoSrc: "/works/video/gen-ai-seoul-opening.webm",
+    objectPosition: "54% 42%",
   },
 ];
 
@@ -228,18 +230,9 @@ export default function HomePageClient() {
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
   const [activeVideoItem, setActiveVideoItem] = useState(null);
   const deferredFilter = useDeferredValue(activeFilter);
+  const currentHeroSlide = heroSlides[activeHeroSlide] ?? heroSlides[0];
   const filteredWorks =
     deferredFilter === "all" ? worksItems : worksItems.filter((item) => item.category === deferredFilter);
-
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setActiveHeroSlide((current) => (current + 1) % heroSlides.length);
-    }, 7000);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, []);
 
   useEffect(() => {
     const pendingSection = consumePendingSectionScroll();
@@ -264,6 +257,10 @@ export default function HomePageClient() {
     });
   };
 
+  const handleHeroSlideEnd = () => {
+    setActiveHeroSlide((current) => (current + 1) % heroSlides.length);
+  };
+
   return (
     <>
       <SiteHeader active="home" onContactClick={() => openModal("general")} />
@@ -285,14 +282,17 @@ export default function HomePageClient() {
 
             <div className="home-hero-bottom">
               <div className="home-hero-media" aria-hidden="true">
-                {heroSlides.map((slide, index) => (
-                  <div
-                    key={slide.id}
-                    className={`home-hero-slide${index === activeHeroSlide ? " is-active" : ""}`}
-                  >
-                    <video src={slide.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
-                  </div>
-                ))}
+                <div key={currentHeroSlide.id} className="home-hero-slide is-active">
+                  <video
+                    src={currentHeroSlide.videoSrc}
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
+                    style={{ objectPosition: currentHeroSlide.objectPosition }}
+                    onEnded={handleHeroSlideEnd}
+                  ></video>
+                </div>
                 <div className="home-hero-stage"></div>
               </div>
 
