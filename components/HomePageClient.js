@@ -4,6 +4,7 @@ import Link from "next/link";
 import { startTransition, useDeferredValue, useEffect, useState } from "react";
 
 import { worksFilters, worksItems } from "../app/works/works-data";
+import { consumePendingSectionScroll, scrollToSection } from "../lib/pendingSectionScroll";
 import ContactModal from "./ContactModal";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
@@ -238,6 +239,18 @@ export default function HomePageClient() {
     return () => {
       window.clearInterval(intervalId);
     };
+  }, []);
+
+  useEffect(() => {
+    const pendingSection = consumePendingSectionScroll();
+
+    if (!pendingSection) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      scrollToSection(pendingSection);
+    });
   }, []);
 
   const openModal = (type) => {

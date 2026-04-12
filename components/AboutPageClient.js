@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
+import { storePendingSectionScroll } from "../lib/pendingSectionScroll";
 import ContactModal from "./ContactModal";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
@@ -164,9 +166,9 @@ export default function AboutPageClient() {
                 <button type="button" className="contact-btn" onClick={() => openModal("general")}>
                   문의하기
                 </button>
-                <a className="ghost-link" href="/#works">
+                <Link className="ghost-link" href="/" onClick={() => storePendingSectionScroll("works")}>
                   작업보기
-                </a>
+                </Link>
               </div>
             </div>
           </section>

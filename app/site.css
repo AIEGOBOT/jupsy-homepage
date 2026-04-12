@@ -115,7 +115,18 @@ a {
   font-weight: 500;
 }
 
-.nav a.active {
+.nav a,
+.nav button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav a.active,
+.nav button.active {
   color: var(--ink);
   font-weight: 700;
 }
@@ -1124,7 +1135,7 @@ a {
 }
 
 .about-hero {
-  padding: 26px 0 0;
+  padding: 0;
 }
 
 .about-hero-shell {
