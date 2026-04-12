@@ -7,6 +7,8 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - `Next.js 16`
 - `React 19`
 - `nodemailer`
+- `@vercel/analytics`
+- `ESLint`
 - App Router
 - 공통 포트폴리오 데이터 기반 페이지 구성
 
@@ -21,6 +23,8 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - `app/layout.js`: 루트 레이아웃, 메타데이터, 폰트 로드
 - `app/page.js`: 홈 페이지 엔트리
 - `app/about/page.js`: 소개 페이지 엔트리
+- `app/robots.js`: robots.txt 생성
+- `app/sitemap.js`: sitemap.xml 생성
 - `app/works/works-data.js`: 필터, 홈 포트폴리오 데이터, 상세 페이지 데이터
 - `app/works/[slug]/page.js`: 작업 상세 라우트
 - `app/api/inquiry/route.js`: 의뢰 폼 제출을 디스코드 웹훅 또는 SMTP 메일로 전달하는 API
@@ -33,6 +37,8 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - `components/SiteFooter.js`: 푸터와 연락처 앵커
 - `components/WorkDetailPageClient.js`: 작업 상세 히어로와 갤러리 UI
 - `.env.example`: 로컬 환경 변수 예시
+- `lib/analytics.js`: 프론트 이벤트 추적 헬퍼
+- `lib/siteMetadata.js`: 공통 SEO 메타데이터와 사이트 URL 헬퍼
 - `public/clients/`: 클라이언트 로고 에셋
 - `public/home/`: 홈 카드용 에셋
 - `public/works/image/`: 이미지 작업 대표 이미지
@@ -43,6 +49,7 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 
 - 의존성 설치: `npm install`
 - 개발 서버 실행: `npm run dev`
+- 코드 검사: `npm run lint`
 - 프로덕션 빌드 확인: `npm run build`
 - 프로덕션 서버 실행: `npm run start`
 
@@ -54,6 +61,7 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 
 `.env.example`을 `.env.local`로 복사한 뒤 필요한 채널만 설정합니다.
 
+- `NEXT_PUBLIC_SITE_URL`: 실제 배포 도메인 주소, canonical/OG/sitemap 생성에 사용
 - `DISCORD_WEBHOOK_URL`: 의뢰 접수 내용을 디스코드로 받을 웹훅 URL
 - `SMTP_HOST`
 - `SMTP_PORT`
@@ -65,6 +73,7 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 
 의뢰 API는 디스코드 웹훅 또는 SMTP 중 하나 이상이 설정되어 있어야 정상 동작합니다.
 `.env.local`은 로컬 전용 파일이라 Git에 포함되지 않으므로, 배포 환경에서는 `Vercel > Project Settings > Environment Variables`에 동일한 값을 별도로 등록해야 합니다.
+Vercel Analytics를 실제로 수집하려면 `Vercel > Project > Analytics`에서 Web Analytics를 활성화해야 합니다.
 
 Gmail SMTP를 사용할 때의 기본 예시는 아래와 같습니다.
 
@@ -88,8 +97,10 @@ Gmail SMTP를 사용할 때의 기본 예시는 아래와 같습니다.
 - 홈과 소개 페이지의 `의뢰하기`는 공통 모달을 엽니다.
 - 의뢰 모달은 왼쪽 정보 패널과 오른쪽 폼 패널로 구성된 2단 레이아웃입니다.
 - 의뢰 폼은 `/api/inquiry`로 제출되며, 필수값은 연락처와 의뢰 내용입니다.
+- 의뢰 폼에는 허니팟, 너무 빠른 제출 차단, 간단한 rate limit이 적용되어 있습니다.
 - 의뢰 접수는 설정된 채널에 따라 디스코드 웹훅, SMTP 메일 또는 둘 다로 전달됩니다.
 - 제출 중에는 폼 입력이 잠기고, 완료 후 성공 또는 실패 상태 메시지를 표시합니다.
+- 상세 페이지에서도 헤더와 하단 CTA를 통해 바로 `의뢰하기` 모달을 열 수 있습니다.
 - 작품 필터는 `All`, `이미지`, `영상`을 지원합니다.
 - 홈 포트폴리오 그리드는 3열 기준으로 유지됩니다.
 - 클라이언트 마퀴 로고는 컬러 원본을 유지하고, 이전보다 느린 속도로 좌우 반복 이동합니다.
@@ -97,11 +108,14 @@ Gmail SMTP를 사용할 때의 기본 예시는 아래와 같습니다.
 - 홈 카드에서 사용하는 비율 키는 `1:1`, `4:3`, `16:9`, `9:16`만 허용합니다.
 - `9:16` 작업은 홈 그리드에서 2행을 차지하고, 나머지 비율은 1행만 사용합니다.
 - 큰 데스크톱에서는 홈 그리드의 행 높이를 추가로 키워 세로 카드가 너무 납작해 보이지 않도록 조정합니다.
-- 영상 작업은 로컬 `WEBM` 미리보기를 사용하고, 홈 그리드에서는 클릭 시 외부 이동 대신 모달에서 바로 재생합니다.
+- 영상 작업은 로컬 `WEBM` 미리보기를 사용하고, 홈 그리드에서는 화면에 보이는 카드만 재생합니다.
+- 홈 그리드의 영상 카드는 클릭 시 외부 이동 대신 모달에서 바로 재생합니다.
 - 이미지 작업은 `detailSlug`가 있으면 내부 상세 페이지로 이동합니다.
-- 현재 내부 상세 페이지는 `revv`, `saerom-black-goat-beauty-cut`, `richcoco`, `galbitsal`, `blueberry`, `ssanghwa`, `suji-tang`, `prune-noni`, `hanwoo-bulgogi`, `black-goat-soup`를 지원합니다.
+- 내부 상세 페이지는 `app/works/works-data.js`의 `workDetails` 데이터 기준으로 정적 생성됩니다.
 - 작업 상세 페이지는 전체 화면 히어로 이미지와 중앙 타이틀 오버레이, 동일 폭 갤러리로 구성됩니다.
 - 상세 히어로에서는 이미지 자체 확대 모션 없이 텍스트 오버레이만 스크롤에 따라 움직입니다.
+- `app/layout.js`, `app/robots.js`, `app/sitemap.js`를 통해 기본 SEO 메타, robots, sitemap을 제공합니다.
+- `@vercel/analytics`로 페이지뷰가 자동 수집되며, 문의 오픈/문의 제출/영상 오픈 이벤트를 추적합니다.
 - 소개 페이지는 홈과 유사하게 넓게 펼쳐지는 히어로와 텍스트 중심 섹션 구조를 사용합니다.
 - 팀 섹션은 프로필 이미지 없이 텍스트 중심 카드 레이아웃입니다.
 - 푸터는 메일 주소와 인스타그램, 유튜브 외부 링크를 직접 노출합니다.
@@ -121,6 +135,7 @@ Gmail SMTP를 사용할 때의 기본 예시는 아래와 같습니다.
 - 파일명은 가능하면 단순하고 ASCII 친화적으로 유지합니다.
 - 포트폴리오 미디어는 가벼운 웹용 이미지와 `WEBM` 미리보기를 우선 사용합니다.
 - Linux, Vercel 같은 환경은 대소문자를 구분하므로 파일명과 경로를 정확히 맞춰야 합니다.
+- SEO 품질을 위해 실제 배포 시 `NEXT_PUBLIC_SITE_URL`을 반드시 설정합니다.
 
 ## 다음 작업 시 참고
 

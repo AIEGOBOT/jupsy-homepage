@@ -18,6 +18,8 @@ function YouTubeIcon() {
 }
 
 export default function SiteFooter() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="site-footer" id="contact">
       <div className="wrap footer-inner">
@@ -48,7 +50,7 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div>&copy; 2025 JUPSY STUDIO. ALL RIGHTS RESERVED.</div>
+        <div>&copy; {currentYear} JUPSY STUDIO. ALL RIGHTS RESERVED.</div>
       </div>
     </footer>
   );

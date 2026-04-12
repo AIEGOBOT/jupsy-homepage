@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { startTransition, useDeferredValue, useEffect, useState } from "react";
+import { startTransition, useDeferredValue, useEffect, useRef, useState } from "react";
 
 import { worksFilters, worksItems } from "../app/works/works-data";
+import { trackPortfolioVideoOpened } from "../lib/analytics";
 import { consumePendingSectionScroll, scrollToSection } from "../lib/pendingSectionScroll";
 import ContactModal from "./ContactModal";
 import SiteFooter from "./SiteFooter";
@@ -60,7 +61,7 @@ const heroSlides = [
   },
 ];
 
-function getYouTubeEmbedUrl(url) {
+function getVideoEmbedUrl(url) {
   if (!url) {
     return null;
   }
@@ -87,6 +88,18 @@ function getYouTubeEmbedUrl(url) {
 
       if (parsedUrl.pathname.startsWith("/embed/")) {
         return `${parsedUrl.origin}${parsedUrl.pathname}?autoplay=1&rel=0`;
+      }
+    }
+
+    if (hostname === "drive.google.com") {
+      if (parsedUrl.pathname.startsWith("/file/d/")) {
+        const fileId = parsedUrl.pathname.split("/")[3];
+        return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
+      }
+
+      if (parsedUrl.pathname === "/open") {
+        const fileId = parsedUrl.searchParams.get("id");
+        return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
       }
     }
   } catch {
@@ -123,7 +136,7 @@ function VideoPreviewModal({ item, onClose }) {
     return null;
   }
 
-  const embedUrl = getYouTubeEmbedUrl(item.href);
+  const embedUrl = getVideoEmbedUrl(item.href);
   const modalClassName =
     item.aspect === "9:16" ? "video-preview-modal-panel is-portrait" : "video-preview-modal-panel is-landscape";
 
@@ -156,6 +169,86 @@ function VideoPreviewModal({ item, onClose }) {
   );
 }
 
+function WorkPreviewVideo({ src }) {
+  const videoRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const applyPreferences = () => {
+      setIsMobileViewport(mobileQuery.matches);
+      setPrefersReducedMotion(motionQuery.matches);
+    };
+
+    applyPreferences();
+    mobileQuery.addEventListener("change", applyPreferences);
+    motionQuery.addEventListener("change", applyPreferences);
+
+    return () => {
+      mobileQuery.removeEventListener("change", applyPreferences);
+      motionQuery.removeEventListener("change", applyPreferences);
+    };
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting && entry.intersectionRatio >= 0.35);
+      },
+      {
+        threshold: [0, 0.35, 0.65],
+        rootMargin: "120px 0px",
+      },
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video) {
+      return;
+    }
+
+    if (prefersReducedMotion || !isVisible) {
+      video.pause();
+      return;
+    }
+
+    const playPromise = video.play();
+
+    if (typeof playPromise?.catch === "function") {
+      playPromise.catch(() => {});
+    }
+  }, [isVisible, prefersReducedMotion]);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      muted
+      loop
+      playsInline
+      preload={isMobileViewport ? "none" : "metadata"}
+    ></video>
+  );
+}
+
 function HomeWorkCard({ item, onVideoOpen }) {
   const isVideo = item.kind === "video";
   const aspectClassMap = {
@@ -173,7 +266,7 @@ function HomeWorkCard({ item, onVideoOpen }) {
         <Link className="home-work-link" href={detailHref} aria-label={`${item.title} 작업 자세히 보기`}>
           <div className="home-work-media">
             {isVideo ? (
-              <video src={item.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
+              <WorkPreviewVideo src={item.videoSrc} />
             ) : (
               <img src={item.imageSrc} alt={item.imageAlt} />
             )}
@@ -212,7 +305,7 @@ function HomeWorkCard({ item, onVideoOpen }) {
         onClick={() => onVideoOpen(item)}
       >
         <div className="home-work-media">
-          <video src={item.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
+          <WorkPreviewVideo src={item.videoSrc} />
         </div>
         <div className="home-work-meta">
           <span className="home-work-type">{item.typeLabel}</span>
@@ -259,6 +352,15 @@ export default function HomePageClient() {
 
   const handleHeroSlideEnd = () => {
     setActiveHeroSlide((current) => (current + 1) % heroSlides.length);
+  };
+
+  const handleVideoOpen = (item) => {
+    trackPortfolioVideoOpened({
+      title: item.title,
+      href: item.href,
+      aspect: item.aspect,
+    });
+    setActiveVideoItem(item);
   };
 
   return (
@@ -386,7 +488,7 @@ export default function HomePageClient() {
 
             <div key={deferredFilter} className="home-works-grid">
               {filteredWorks.map((item) => (
-                <HomeWorkCard key={item.id} item={item} onVideoOpen={setActiveVideoItem} />
+                <HomeWorkCard key={item.id} item={item} onVideoOpen={handleVideoOpen} />
               ))}
             </div>
 

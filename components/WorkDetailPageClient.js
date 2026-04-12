@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+import ContactModal from "./ContactModal";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
 
 export default function WorkDetailPageClient({ detail }) {
   const [heroProgress, setHeroProgress] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inquiryType, setInquiryType] = useState("image");
 
   useEffect(() => {
     let frameId = null;
@@ -51,38 +54,60 @@ export default function WorkDetailPageClient({ detail }) {
   const heroImageSrc = detail.coverImage || detail.imageSrc || detail.gallery[0]?.src;
   const heroImageAlt = detail.coverAlt || detail.imageAlt || detail.gallery[0]?.alt || detail.title;
   const galleryImages = detail.gallery;
+  const openModal = (type = "image") => {
+    setInquiryType(type);
+    setIsModalOpen(true);
+  };
 
   return (
-    <div className="subpage work-detail-page">
-      <SiteHeader active="works" />
+    <>
+      <div className="subpage work-detail-page">
+        <SiteHeader active="works" onContactClick={() => openModal("image")} />
 
-      <main className="work-detail-main">
-        <section className="work-detail-hero">
-          <div className="work-detail-hero-shell">
-            <div className="work-detail-hero-media">
-              <img src={heroImageSrc} alt={heroImageAlt} />
-              <div className="work-detail-hero-shade"></div>
+        <main className="work-detail-main">
+          <section className="work-detail-hero">
+            <div className="work-detail-hero-shell">
+              <div className="work-detail-hero-media">
+                <img src={heroImageSrc} alt={heroImageAlt} />
+                <div className="work-detail-hero-shade"></div>
+              </div>
+
+              <div className="work-detail-hero-overlay" style={overlayStyle}>
+                <div className="work-detail-hero-kicker">JUPSY Studio</div>
+                <h1>{detail.title}</h1>
+              </div>
             </div>
+          </section>
 
-            <div className="work-detail-hero-overlay" style={overlayStyle}>
-              <div className="work-detail-hero-kicker">JUPSY Studio</div>
-              <h1>{detail.title}</h1>
+          <section className="work-detail-gallery-section">
+            <div className="wrap work-detail-gallery">
+              {galleryImages.map((image, index) => (
+                <figure key={image.src} className="work-detail-gallery-item">
+                  <img src={image.src} alt={image.alt} loading={index < 2 ? "eager" : "lazy"} />
+                </figure>
+              ))}
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="work-detail-gallery-section">
-          <div className="wrap work-detail-gallery">
-            {galleryImages.map((image, index) => (
-              <figure key={image.src} className="work-detail-gallery-item">
-                <img src={image.src} alt={image.alt} loading={index < 2 ? "eager" : "lazy"} />
-              </figure>
-            ))}
-          </div>
-        </section>
-      </main>
+          <section className="work-detail-cta">
+            <div className="wrap work-detail-cta-shell">
+              <p>비슷한 톤의 이미지 작업이나 상세페이지 제작이 필요하시면 바로 문의해 주세요.</p>
+              <button type="button" className="contact-btn" onClick={() => openModal("image")}>
+                의뢰하기
+              </button>
+            </div>
+          </section>
+        </main>
 
-      <SiteFooter />
-    </div>
+        <SiteFooter />
+      </div>
+
+      <ContactModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        inquiryType={inquiryType}
+        setInquiryType={setInquiryType}
+      />
+    </>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { trackInquiryOpened } from "../lib/analytics";
 
 const inquiryOptions = [
   { value: "general", label: "일반 문의" },
@@ -14,11 +16,14 @@ const initialFormState = {
   budget: "",
   deadline: "",
   message: "",
+  companyWebsite: "",
 };
 
 export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryType }) {
   const [formValues, setFormValues] = useState(initialFormState);
   const [submitState, setSubmitState] = useState({ status: "idle", message: "" });
+  const wasOpenRef = useRef(false);
+  const openedAtRef = useRef(Date.now());
 
   useEffect(() => {
     if (!isOpen) {
@@ -47,6 +52,19 @@ export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryT
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen && !wasOpenRef.current) {
+      openedAtRef.current = Date.now();
+      trackInquiryOpened({
+        inquiryType,
+        pagePath: window.location.pathname,
+        source: "contact-modal",
+      });
+    }
+
+    wasOpenRef.current = isOpen;
+  }, [isOpen, inquiryType]);
+
   if (!isOpen) {
     return null;
   }
@@ -70,6 +88,7 @@ export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryT
           inquiryType,
           ...formValues,
           pagePath: window.location.pathname,
+          formStartedAt: openedAtRef.current,
         }),
       });
 
@@ -106,8 +125,8 @@ export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryT
             <div className="contact-modal-aside-copy">
               <div className="contact-modal-kicker">Visual Production For Brands</div>
               <p className="contact-modal-aside-text">
-                이미지, 영상, 상세페이지, 캠페인 비주얼까지 목적에 맞는 결과물로 정리해 실제 다음 단계로 이어지게
-                만듭니다.
+                프로젝트 목적과 일정에 맞춰 이미지, 영상, 상세페이지, 캠페인 비주얼까지 필요한 범위를 함께
+                정리합니다.
               </p>
             </div>
             <div className="contact-modal-aside-footer">JUPSY Studio</div>
@@ -194,8 +213,30 @@ export default function ContactModal({ isOpen, onClose, inquiryType, setInquiryT
                 ></textarea>
               </label>
 
-              <div className="contact-form-note">
-                디스코드 웹훅 또는 이메일 설정이 완료되어 있으면 제출 즉시 해당 채널로 전달됩니다.
+              <div
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  width: "1px",
+                  height: "1px",
+                  overflow: "hidden",
+                  clip: "rect(0 0 0 0)",
+                  clipPath: "inset(50%)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <label>
+                  웹사이트
+                  <input
+                    type="text"
+                    name="companyWebsite"
+                    value={formValues.companyWebsite}
+                    onChange={handleChange}
+                    autoComplete="off"
+                    tabIndex={-1}
+                    disabled={isSubmitting}
+                  />
+                </label>
               </div>
 
               {submitState.message ? (

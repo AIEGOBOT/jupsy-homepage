@@ -1,11 +1,53 @@
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
+
+import { defaultOgImage, defaultTitle, getSiteUrl, siteDescription, siteName } from "../lib/siteMetadata";
+
+const siteUrl = getSiteUrl();
 
 export const metadata = {
+  metadataBase: new URL(siteUrl),
+  applicationName: siteName,
   title: {
-    default: "접시 | AI 제작 스튜디오",
-    template: "%s | 접시",
+    default: defaultTitle,
+    template: `%s | ${siteName}`,
   },
-  description: "AI 이미지 제작 의뢰와 AI 영상 제작 의뢰를 중심으로 한 접시 홈페이지",
+  description: siteDescription,
+  alternates: {
+    canonical: "/",
+  },
+  keywords: [
+    "JUPSY",
+    "AI 스튜디오",
+    "AI 이미지 제작",
+    "AI 영상 제작",
+    "상세페이지 제작",
+    "캠페인 비주얼",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: "/",
+    siteName,
+    title: defaultTitle,
+    description: siteDescription,
+    images: [
+      {
+        url: defaultOgImage,
+        alt: `${siteName} 대표 이미지`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: defaultTitle,
+    description: siteDescription,
+    images: [defaultOgImage],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -19,7 +61,10 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

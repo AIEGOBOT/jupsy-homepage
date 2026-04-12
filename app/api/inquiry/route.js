@@ -1,13 +1,43 @@
 import nodemailer from "nodemailer";
+import { track } from "@vercel/analytics/server";
 
 const inquiryTypeMap = {
   general: "일반 문의",
   image: "이미지 제작 의뢰",
   video: "영상 제작 의뢰",
 };
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const MIN_FORM_FILL_MS = 1500;
+const inquiryRateLimitStore = new Map();
 
 function valueOrFallback(value) {
   return value?.trim() ? value.trim() : "-";
+}
+
+function getRequestIp(request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() || "unknown";
+  }
+
+  return request.headers.get("x-real-ip") || "unknown";
+}
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const requestTimestamps = inquiryRateLimitStore.get(ip) || [];
+  const recentTimestamps = requestTimestamps.filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS);
+
+  if (recentTimestamps.length >= RATE_LIMIT_MAX_REQUESTS) {
+    inquiryRateLimitStore.set(ip, recentTimestamps);
+    return true;
+  }
+
+  recentTimestamps.push(now);
+  inquiryRateLimitStore.set(ip, recentTimestamps);
+  return false;
 }
 
 function buildInquiryLines(payload) {
@@ -99,6 +129,17 @@ async function sendEmail(payload) {
 export async function POST(request) {
   try {
     const payload = await request.json();
+    const ip = getRequestIp(request);
+    const submittedTooFast =
+      typeof payload.formStartedAt === "number" && Date.now() - payload.formStartedAt < MIN_FORM_FILL_MS;
+
+    if (payload.companyWebsite?.trim() || submittedTooFast) {
+      return Response.json({ ok: true, ignored: true });
+    }
+
+    if (isRateLimited(ip)) {
+      return Response.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 429 });
+    }
 
     if (!payload.contact?.trim() || !payload.message?.trim()) {
       return Response.json({ error: "연락처와 의뢰 내용은 필수입니다." }, { status: 400 });
@@ -123,6 +164,12 @@ export async function POST(request) {
         { status: 500 }
       );
     }
+
+    await track("Inquiry Submitted", {
+      inquiryType: inquiryTypeMap[payload.inquiryType] || payload.inquiryType || "-",
+      pagePath: valueOrFallback(payload.pagePath),
+      sentChannels: sentChannels.join(","),
+    });
 
     return Response.json({ ok: true, sentChannels });
   } catch (error) {
