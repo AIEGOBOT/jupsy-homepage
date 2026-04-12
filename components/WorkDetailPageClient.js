@@ -40,14 +40,13 @@ export default function WorkDetailPageClient({ detail }) {
     };
   }, []);
 
-  const overlayStyle = {
-    opacity: Math.max(0, 1 - heroProgress * 1.35),
-    transform: `translate3d(0, ${heroProgress * 64 - 108}px, 0) scale(${1 - heroProgress * 0.04})`,
-  };
-
-  const mediaStyle = {
-    transform: `scale(${1.06 - heroProgress * 0.08})`,
-  };
+  const overlayStyle =
+    heroProgress > 0
+      ? {
+          opacity: Math.max(0, 1 - heroProgress * 1.35),
+          transform: `translate3d(0, ${heroProgress * 64}px, 0) scale(${1 - heroProgress * 0.04})`,
+        }
+      : undefined;
 
   const heroImageSrc = detail.coverImage || detail.imageSrc || detail.gallery[0]?.src;
   const heroImageAlt = detail.coverAlt || detail.imageAlt || detail.gallery[0]?.alt || detail.title;
@@ -61,7 +60,7 @@ export default function WorkDetailPageClient({ detail }) {
         <section className="work-detail-hero">
           <div className="work-detail-hero-shell">
             <div className="work-detail-hero-media">
-              <img src={heroImageSrc} alt={heroImageAlt} style={mediaStyle} />
+              <img src={heroImageSrc} alt={heroImageAlt} />
               <div className="work-detail-hero-shade"></div>
             </div>
 

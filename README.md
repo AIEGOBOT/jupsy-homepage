@@ -1,96 +1,95 @@
-# jupsy-homepage
+# JUPSY 홈페이지
 
-JUPSY studio homepage built with Next.js App Router.
+Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 
-## Stack
+## 기술 스택
 
 - `Next.js 16`
 - `React 19`
-- App Router with a client-driven home page
-- Shared portfolio data for the home page grid
+- App Router
+- 공통 포트폴리오 데이터 기반 페이지 구성
 
-## Routes
+## 주요 경로
 
-- `/`: home page with split hero, client marquee, works grid, and shared inquiry modal
-- `/about`: studio introduction, workflow summary, team section, and inquiry CTA
-- `/works/[slug]`: internal work detail page only for portfolio items that have a `detailSlug`
+- `/`: 홈 페이지, 히어로 섹션, 클라이언트 영역, 포트폴리오 그리드, 공통 의뢰 모달
+- `/about`: 스튜디오 소개, 작업 방식, 팀 소개, 의뢰 유도 섹션
+- `/works/[slug]`: 상세 데이터가 연결된 작업의 내부 상세 페이지
 
-## Project Structure
+## 프로젝트 구조
 
-- `app/layout.js`: root layout, metadata, and font loading
-- `app/page.js`: home page entry
-- `app/about/page.js`: about page
-- `app/works/works-data.js`: shared works filters, home portfolio data, and detail-page data
-- `app/works/[slug]/page.js`: dynamic work detail route
-- `app/globals.css`: global stylesheet entry
-- `app/site.css`: shared site styles for all pages
-- `components/HomePageClient.js`: home UI, split hero, client marquee, works grid, inquiry modal
-- `components/AboutPageClient.js`: about page client UI and inquiry modal trigger wiring
-- `components/ContactModal.js`: shared inquiry modal used by home and about
-- `components/SiteHeader.js`: shared header with route-aware anchors
-- `components/SiteFooter.js`: shared footer with contact anchor
-- `components/WorkDetailPageClient.js`: work detail hero and gallery client UI
-- `.env.example`: local environment variable template
-- `public/clients/`: client logo assets for the marquee
-- `public/home/`: home preview card assets
-- `public/works/image/`: portfolio still images
-- `public/works/projects/`: per-project detail gallery assets
-- `public/works/video/`: portfolio motion preview assets
+- `app/layout.js`: 루트 레이아웃, 메타데이터, 폰트 로드
+- `app/page.js`: 홈 페이지 엔트리
+- `app/about/page.js`: 소개 페이지 엔트리
+- `app/works/works-data.js`: 필터, 홈 포트폴리오 데이터, 상세 페이지 데이터
+- `app/works/[slug]/page.js`: 작업 상세 라우트
+- `app/globals.css`: 전역 스타일 엔트리
+- `app/site.css`: 사이트 공통 스타일
+- `components/HomePageClient.js`: 홈 UI, 히어로, 클라이언트 영역, 작품 그리드, 모달 연결
+- `components/AboutPageClient.js`: 소개 페이지 UI와 모달 연결
+- `components/ContactModal.js`: 홈과 소개 페이지에서 공통으로 쓰는 의뢰 모달
+- `components/SiteHeader.js`: 상단 네비게이션과 고정 텍스트 링크
+- `components/SiteFooter.js`: 푸터와 연락처 앵커
+- `components/WorkDetailPageClient.js`: 작업 상세 히어로와 갤러리 UI
+- `.env.example`: 로컬 환경 변수 예시
+- `public/clients/`: 클라이언트 로고 에셋
+- `public/home/`: 홈 카드용 에셋
+- `public/works/image/`: 이미지 작업 대표 이미지
+- `public/works/projects/`: 작업별 상세 갤러리 에셋
+- `public/works/video/`: 영상 작업 미리보기 에셋
 
-## Development
+## 개발 방법
 
-- Install dependencies: `npm install`
-- Run local dev server: `npm run dev`
-- Build for production check: `npm run build`
-- Start production server locally: `npm run start`
+- 의존성 설치: `npm install`
+- 개발 서버 실행: `npm run dev`
+- 프로덕션 빌드 확인: `npm run build`
+- 프로덕션 서버 실행: `npm run start`
 
-Default local address:
+기본 로컬 주소:
 
 - `http://localhost:3000`
 
-## Environment Variables
+## 환경 변수
 
-Copy `.env.example` to `.env.local` if local-only variables are needed later.
+필요한 경우 `.env.example`을 `.env.local`로 복사해 로컬 전용 값을 추가합니다.
 
-## Current Implementation Notes
+## 현재 구현 상태
 
-- Main header navigation order is `HOME`, `WORKS`, `ABOUT`, and the top-right action is `문의하기`.
-- The home hero is split into a dark top band and a media-driven bottom band.
-- The home hero bottom currently rotates between `KBS` and `GEN AI SEOUL 2025` local videos.
-- The home page opens the shared inquiry modal from `문의하기`, `이미지 제작 의뢰`, `영상 제작 의뢰`, and the footer contact action.
-- The about page also opens the shared inquiry modal directly from its header, footer, and CTA.
-- The inquiry modal is a split layout: dark left information panel and white right form panel.
-- The inquiry form is intentionally still UI-only for now; no submission handler is connected yet.
-- PayPal-related UI, API routes, helpers, and env var examples have been removed for now.
-- Works filtering supports `All`, `Photography`, and `Cinematography`.
-- The home portfolio grid is fixed to `3 columns` with equal card widths.
-- Home portfolio cards currently use only these aspect keys from `works-data.js`: `1:1`, `4:3`, `16:9`, `9:16`.
-- In the home portfolio grid, `9:16` items span `2 rows`; all other aspect types use `1 row`.
-- Video works use local `WEBM` previews and currently open external links such as YouTube.
-- Image works can open internal detail pages when the item has a `detailSlug`.
-- Current internal detail pages include `revv`, `saerom-black-goat-beauty-cut`, `richcoco`, `galbitsal`, `blueberry`, `ssanghwa`, `suji-tang`, `prune-noni`, `hanwoo-bulgogi`, and `black-goat-soup`.
-- Work detail pages currently use a full-screen hero image, centered overlay title, and a same-width image gallery below.
-- The about page now uses centered section copy blocks similar to the home `Clients` and `Works` sections.
-- Team cards on `/about` use the current text-first member grid layout without profile images.
-- The `About` page hero now behaves like the home hero: it expands with viewport size and uses a full-width layout.
+- 상단 중앙 네비게이션은 `HOME`, `WORKS`, `ABOUT` 순서입니다.
+- 좌상단 `JUPSY`와 우상단 `의뢰하기`는 페이지 이동이나 스크롤과 무관하게 항상 보이는 고정 텍스트 링크입니다.
+- 홈 히어로는 상단 다크 밴드와 하단 미디어 밴드로 나뉜 구조입니다.
+- 홈 히어로 하단 배경은 현재 로컬 영상 에셋을 순환해 사용합니다.
+- 홈과 소개 페이지의 `의뢰하기`는 공통 모달을 엽니다.
+- 의뢰 모달은 왼쪽 정보 패널과 오른쪽 폼 패널로 구성된 2단 레이아웃입니다.
+- 의뢰 폼은 현재 UI만 구현되어 있고 제출 처리 로직은 아직 연결하지 않았습니다.
+- 작품 필터는 `All`, `이미지`, `영상`을 지원합니다.
+- 홈 포트폴리오 그리드는 3열 기준으로 유지됩니다.
+- 홈 카드에서 사용하는 비율 키는 `1:1`, `4:3`, `16:9`, `9:16`만 허용합니다.
+- `9:16` 작업은 홈 그리드에서 2행을 차지하고, 나머지 비율은 1행만 사용합니다.
+- 영상 작업은 로컬 `WEBM` 미리보기를 사용하고, 클릭 시 외부 링크로 이동합니다.
+- 이미지 작업은 `detailSlug`가 있으면 내부 상세 페이지로 이동합니다.
+- 현재 내부 상세 페이지는 `revv`, `saerom-black-goat-beauty-cut`, `richcoco`, `galbitsal`, `blueberry`, `ssanghwa`, `suji-tang`, `prune-noni`, `hanwoo-bulgogi`, `black-goat-soup`를 지원합니다.
+- 작업 상세 페이지는 전체 화면 히어로 이미지와 중앙 타이틀 오버레이, 동일 폭 갤러리로 구성됩니다.
+- 상세 히어로에서는 이미지 자체 확대 모션 없이 텍스트 오버레이만 스크롤에 따라 움직입니다.
+- 소개 페이지는 홈과 유사하게 넓게 펼쳐지는 히어로와 텍스트 중심 섹션 구조를 사용합니다.
+- 팀 섹션은 프로필 이미지 없이 텍스트 중심 카드 레이아웃입니다.
 
-## Asset Rules
+## 에셋 규칙
 
-- Keep asset directory names lowercase under `public/`
-- Keep new portfolio entries in `app/works/works-data.js` instead of hardcoding them into page components
-- When adding home portfolio items, always set an `aspect` value in `app/works/works-data.js`
-- Allowed home portfolio aspect values are only `1:1`, `4:3`, `16:9`, and `9:16`
-- If a work should open its own internal detail page, add a `detailSlug` to the item and a matching entry in `workDetails`
-- Detail-page assets should live under `public/works/projects/<project-slug>/`
-- Current detail galleries are stored as `webp` files for lighter deployment and bandwidth use
-- Gallery image file names should stay simple and ASCII-friendly when possible
-- Prefer lightweight web-ready images and `WEBM` previews for portfolio media
-- Deployment targets such as Linux/Vercel are case-sensitive, so file names and import paths must match exactly
+- `public/` 아래 디렉터리 이름은 소문자를 유지합니다.
+- 새 포트폴리오 항목은 컴포넌트에 하드코딩하지 말고 `app/works/works-data.js`에 추가합니다.
+- 홈 포트폴리오 항목에는 반드시 `aspect` 값을 지정합니다.
+- 홈 포트폴리오 비율 값은 `1:1`, `4:3`, `16:9`, `9:16`만 사용합니다.
+- 내부 상세 페이지가 필요한 작업은 `detailSlug`와 `workDetails` 항목을 함께 추가합니다.
+- 상세 페이지 에셋은 `public/works/projects/<project-slug>/` 아래에 둡니다.
+- 현재 상세 갤러리 이미지는 배포 용량과 대역폭을 고려해 `webp` 위주로 관리합니다.
+- 파일명은 가능하면 단순하고 ASCII 친화적으로 유지합니다.
+- 포트폴리오 미디어는 가벼운 웹용 이미지와 `WEBM` 미리보기를 우선 사용합니다.
+- Linux, Vercel 같은 환경은 대소문자를 구분하므로 파일명과 경로를 정확히 맞춰야 합니다.
 
-## Next Session Reminder
+## 다음 작업 시 참고
 
-- If new works are added, update `app/works/works-data.js` first and keep the home portfolio within the current aspect rules unless the grid system itself is intentionally being redesigned
-- If another project needs a detail page, follow the `detailSlug` + `workDetails` + `public/works/projects/<slug>/` pattern used for the existing detail routes
-- If a work should stay on the home grid only, do not add `detailSlug`
-- If navigation is changed later, keep in mind that the current header intentionally mixes in-page anchors and dedicated routes
-- Temporary local files such as `dev-server.log` and screenshot PNGs should not be committed
+- 새 작품을 추가할 때는 먼저 `app/works/works-data.js`를 업데이트합니다.
+- 새 상세 페이지가 필요하면 `detailSlug`, `workDetails`, `public/works/projects/<slug>/` 구조를 같이 맞춥니다.
+- 홈 그리드에만 남길 작업이면 `detailSlug`를 추가하지 않습니다.
+- 네비게이션을 다시 바꿀 경우, 현재는 중앙 네비와 좌우 고정 링크가 분리된 구조라는 점을 고려해야 합니다.
+- `dev-server.log` 같은 임시 로컬 파일은 커밋하지 않습니다.

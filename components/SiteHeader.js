@@ -12,10 +12,22 @@ export default function SiteHeader({ active, onContactClick }) {
 
   return (
     <header className="site-header">
-      <div className="wrap header-inner">
-        <Link className="brand brand-link" href="/">
+      <div className="site-header-float">
+        <Link className="brand brand-link header-brand-link" href="/">
           JUPSY
         </Link>
+        {onContactClick ? (
+          <button type="button" className="contact-btn header-action-btn" onClick={onContactClick}>
+            의뢰하기
+          </button>
+        ) : (
+          <Link className="contact-btn header-action-btn" href={`${sectionPrefix}#contact`}>
+            의뢰하기
+          </Link>
+        )}
+      </div>
+
+      <div className="site-header-bar">
         <nav className="nav">
           {navItems.map((item) => (
             <Link key={item.id} className={active === item.id ? "active" : undefined} href={item.href}>
@@ -23,15 +35,6 @@ export default function SiteHeader({ active, onContactClick }) {
             </Link>
           ))}
         </nav>
-        {onContactClick ? (
-          <button type="button" className="contact-btn" onClick={onContactClick}>
-            문의하기
-          </button>
-        ) : (
-          <Link className="contact-btn" href={`${sectionPrefix}#contact`}>
-            문의하기
-          </Link>
-        )}
       </div>
     </header>
   );
