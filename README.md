@@ -64,6 +64,17 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - `INQUIRY_TO_EMAIL`: 수신 주소, 비워두면 `SMTP_USER` 사용
 
 의뢰 API는 디스코드 웹훅 또는 SMTP 중 하나 이상이 설정되어 있어야 정상 동작합니다.
+`.env.local`은 로컬 전용 파일이라 Git에 포함되지 않으므로, 배포 환경에서는 `Vercel > Project Settings > Environment Variables`에 동일한 값을 별도로 등록해야 합니다.
+
+Gmail SMTP를 사용할 때의 기본 예시는 아래와 같습니다.
+
+- `SMTP_HOST=smtp.gmail.com`
+- `SMTP_PORT=587`
+- `SMTP_SECURE=false`
+- `SMTP_USER=<gmail-address>`
+- `SMTP_PASS=<gmail-app-password>`
+- `SMTP_FROM_EMAIL=<gmail-address>`
+- `INQUIRY_TO_EMAIL=<receiver-address>`
 
 ## 현재 구현 상태
 
