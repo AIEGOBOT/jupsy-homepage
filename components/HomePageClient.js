@@ -40,7 +40,103 @@ const heroSlides = [
   },
 ];
 
-function HomeWorkCard({ item }) {
+function getYouTubeEmbedUrl(url) {
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.replace(/^www\./, "");
+
+    if (hostname === "youtu.be") {
+      const videoId = parsedUrl.pathname.slice(1);
+      return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0` : null;
+    }
+
+    if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+      if (parsedUrl.pathname === "/watch") {
+        const videoId = parsedUrl.searchParams.get("v");
+        return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0` : null;
+      }
+
+      if (parsedUrl.pathname.startsWith("/shorts/")) {
+        const videoId = parsedUrl.pathname.split("/")[2];
+        return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0` : null;
+      }
+
+      if (parsedUrl.pathname.startsWith("/embed/")) {
+        return `${parsedUrl.origin}${parsedUrl.pathname}?autoplay=1&rel=0`;
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function VideoPreviewModal({ item, onClose }) {
+  useEffect(() => {
+    if (!item) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [item, onClose]);
+
+  if (!item) {
+    return null;
+  }
+
+  const embedUrl = getYouTubeEmbedUrl(item.href);
+  const modalClassName =
+    item.aspect === "9:16" ? "video-preview-modal-panel is-portrait" : "video-preview-modal-panel is-landscape";
+
+  return (
+    <div className="video-preview-modal" role="dialog" aria-modal="true" aria-labelledby="video-preview-title">
+      <button type="button" className="video-preview-modal-backdrop" aria-label="영상 닫기" onClick={onClose}></button>
+      <div className={modalClassName}>
+        <button type="button" className="video-preview-modal-close" aria-label="영상 닫기" onClick={onClose}>
+          ×
+        </button>
+        <div className="video-preview-modal-frame">
+          {embedUrl ? (
+            <iframe
+              src={embedUrl}
+              title={item.title}
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+            ></iframe>
+          ) : (
+            <div className="video-preview-modal-fallback">
+              <p>이 영상은 모달 미리보기를 지원하지 않아 외부 링크로 열어야 합니다.</p>
+              <a href={item.href} target="_blank" rel="noreferrer">
+                원본 영상 열기
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HomeWorkCard({ item, onVideoOpen }) {
   const isVideo = item.kind === "video";
   const aspectClassMap = {
     "1:1": "is-aspect-square",
@@ -89,12 +185,11 @@ function HomeWorkCard({ item }) {
 
   return (
     <article className={`home-work-card ${aspectClass} is-video`}>
-      <a
+      <button
+        type="button"
         className="home-work-link"
-        href={item.href}
-        target="_blank"
-        rel="noreferrer"
         aria-label={item.ariaLabel}
+        onClick={() => onVideoOpen(item)}
       >
         <div className="home-work-media">
           <video src={item.videoSrc} autoPlay muted loop playsInline preload="metadata"></video>
@@ -103,7 +198,7 @@ function HomeWorkCard({ item }) {
           <span className="home-work-type">{item.typeLabel}</span>
           <h3>{item.title}</h3>
         </div>
-      </a>
+      </button>
     </article>
   );
 }
@@ -113,6 +208,7 @@ export default function HomePageClient() {
   const [inquiryType, setInquiryType] = useState("general");
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
+  const [activeVideoItem, setActiveVideoItem] = useState(null);
   const deferredFilter = useDeferredValue(activeFilter);
   const filteredWorks =
     deferredFilter === "all" ? worksItems : worksItems.filter((item) => item.category === deferredFilter);
@@ -260,7 +356,7 @@ export default function HomePageClient() {
 
             <div key={deferredFilter} className="home-works-grid">
               {filteredWorks.map((item) => (
-                <HomeWorkCard key={item.id} item={item} />
+                <HomeWorkCard key={item.id} item={item} onVideoOpen={setActiveVideoItem} />
               ))}
             </div>
 
@@ -274,6 +370,7 @@ export default function HomePageClient() {
       </main>
 
       <SiteFooter />
+      <VideoPreviewModal item={activeVideoItem} onClose={() => setActiveVideoItem(null)} />
       <ContactModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

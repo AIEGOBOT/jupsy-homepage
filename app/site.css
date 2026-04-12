@@ -647,6 +647,16 @@ a {
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
+.home-work-card.is-video .home-work-link {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  appearance: none;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
 .home-work-link:hover {
   transform: translateY(-4px);
   box-shadow: 0 24px 50px rgba(15, 23, 45, 0.12);
@@ -761,6 +771,111 @@ a {
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+}
+
+.video-preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.video-preview-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+}
+
+.video-preview-modal-panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1240px);
+  max-height: calc(100vh - 40px);
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+  overflow: auto;
+}
+
+.video-preview-modal-panel.is-landscape {
+  max-width: 1240px;
+}
+
+.video-preview-modal-panel.is-portrait {
+  width: min(calc((100vh - 56px) * 9 / 16 + 16px), calc(100vw - 40px));
+  max-width: none;
+}
+
+.video-preview-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.56);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.video-preview-modal-frame {
+  overflow: hidden;
+  border-radius: 6px;
+  background: #000000;
+}
+
+.video-preview-modal-panel.is-landscape .video-preview-modal-frame {
+  aspect-ratio: 16 / 9;
+}
+
+.video-preview-modal-panel.is-portrait .video-preview-modal-frame {
+  aspect-ratio: 9 / 16;
+  width: 100%;
+}
+
+.video-preview-modal-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-preview-modal-fallback {
+  display: grid;
+  place-items: center;
+  gap: 14px;
+  min-height: 100%;
+  padding: 32px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.video-preview-modal-fallback p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.video-preview-modal-fallback a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f172d;
+  font-weight: 700;
 }
 
 .hero {
@@ -2666,6 +2781,20 @@ a {
 
   .home-works-footer {
     margin-top: 22px;
+  }
+
+  .video-preview-modal {
+    padding: 12px;
+  }
+
+  .video-preview-modal-panel {
+    padding: 8px;
+    border-radius: 10px;
+  }
+
+  .video-preview-modal-panel.is-portrait,
+  .video-preview-modal-panel.is-landscape {
+    max-width: min(100%, 100%);
   }
 
   .wrap {
