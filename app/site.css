@@ -1383,6 +1383,9 @@ a {
 .work-detail-gallery-item img {
   display: block;
   width: 100%;
+}
+
+.work-detail-hero-media img {
   height: 100%;
   object-fit: cover;
 }
@@ -1442,7 +1445,9 @@ a {
 }
 
 .work-detail-gallery-item img {
-  aspect-ratio: 4 / 3;
+  height: auto;
+  object-fit: contain;
+  aspect-ratio: auto;
 }
 
 .works-shell {
@@ -2861,6 +2866,10 @@ a {
 }
 
 @media (min-width: 1440px) {
+  .home-works-grid {
+    grid-auto-rows: 320px;
+  }
+
   .home-hero-shell {
     grid-template-rows: minmax(210px, 28svh) 1fr;
   }
