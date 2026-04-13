@@ -1538,10 +1538,10 @@ a {
 .work-detail-hero-media img,
 .work-detail-gallery-item img {
   display: block;
-  width: 100%;
 }
 
 .work-detail-hero-media img {
+  width: 100%;
   height: 100%;
   object-fit: cover;
 }
@@ -1598,9 +1598,13 @@ a {
 
 .work-detail-gallery-item {
   grid-column: auto;
+  display: flex;
+  justify-content: center;
 }
 
 .work-detail-gallery-item img {
+  width: auto;
+  max-width: 100%;
   height: auto;
   object-fit: contain;
   aspect-ratio: auto;
