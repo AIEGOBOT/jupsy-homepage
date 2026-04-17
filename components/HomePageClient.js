@@ -225,6 +225,11 @@ function WorkPreviewVideo({ src }) {
       return;
     }
 
+    if (isMobileViewport) {
+      video.pause();
+      return;
+    }
+
     if (prefersReducedMotion || !isVisible) {
       video.pause();
       return;
@@ -235,7 +240,7 @@ function WorkPreviewVideo({ src }) {
     if (typeof playPromise?.catch === "function") {
       playPromise.catch(() => {});
     }
-  }, [isVisible, prefersReducedMotion]);
+  }, [isMobileViewport, isVisible, prefersReducedMotion]);
 
   return (
     <video

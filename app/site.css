@@ -2859,6 +2859,37 @@ a {
     bottom: 14px;
   }
 
+  .home-work-link,
+  .home-work-media img,
+  .home-work-media video,
+  .home-work-meta {
+    transition: none;
+  }
+
+  .home-work-link:hover,
+  .home-work-link:focus-visible {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .home-work-link:hover .home-work-media img,
+  .home-work-link:hover .home-work-media video,
+  .home-work-link:focus-visible .home-work-media img,
+  .home-work-link:focus-visible .home-work-media video {
+    transform: none;
+  }
+
+  .home-work-link:hover::after,
+  .home-work-link:focus-visible::after {
+    opacity: 0;
+  }
+
+  .home-work-link:hover .home-work-meta,
+  .home-work-link:focus-visible .home-work-meta {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
   .home-work-meta h3 {
     font-size: 1.02rem;
   }

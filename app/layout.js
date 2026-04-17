@@ -1,13 +1,23 @@
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 
-import { defaultOgImage, defaultTitle, getSiteUrl, siteDescription, siteName } from "../lib/siteMetadata";
+import {
+  defaultKeywords,
+  defaultOgImage,
+  defaultTitle,
+  getSiteUrl,
+  siteAltName,
+  siteDescription,
+  siteName,
+} from "../lib/siteMetadata";
 
 const siteUrl = getSiteUrl();
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: siteName,
+  creator: siteAltName,
+  publisher: siteAltName,
   title: {
     default: defaultTitle,
     template: `%s | ${siteName}`,
@@ -16,14 +26,7 @@ export const metadata = {
   alternates: {
     canonical: "/",
   },
-  keywords: [
-    "JUPSY",
-    "AI 스튜디오",
-    "AI 이미지 제작",
-    "AI 영상 제작",
-    "상세페이지 제작",
-    "캠페인 비주얼",
-  ],
+  keywords: defaultKeywords,
   openGraph: {
     type: "website",
     locale: "ko_KR",
@@ -47,6 +50,13 @@ export const metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
   },
 };
 

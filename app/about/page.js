@@ -1,8 +1,10 @@
 import AboutPageClient from "../../components/AboutPageClient";
-import { defaultOgImage, siteName } from "../../lib/siteMetadata";
+import JsonLdScript from "../../components/JsonLdScript";
+import { createAboutPageStructuredData } from "../../lib/structuredData";
+import { defaultKeywords, defaultOgImage, siteName } from "../../lib/siteMetadata";
 
 const aboutDescription =
-  "JUPSY 스튜디오의 작업 방식, 팀 구성, 브랜드 비주얼 제작 방향을 소개하는 페이지입니다.";
+  "JUPSY의 AI 이미지 제작, AI 영상 제작, 상세페이지 제작 워크플로우와 팀 구성을 소개하는 페이지입니다.";
 
 export const metadata = {
   title: "About",
@@ -10,6 +12,7 @@ export const metadata = {
   alternates: {
     canonical: "/about",
   },
+  keywords: [...defaultKeywords, "AI workflow", "creative production team"],
   openGraph: {
     title: `About | ${siteName}`,
     description: aboutDescription,
@@ -30,5 +33,14 @@ export const metadata = {
 };
 
 export default function AboutPage() {
-  return <AboutPageClient />;
+  const structuredData = createAboutPageStructuredData();
+
+  return (
+    <>
+      {structuredData.map((entry, index) => (
+        <JsonLdScript key={index} data={entry} />
+      ))}
+      <AboutPageClient />
+    </>
+  );
 }

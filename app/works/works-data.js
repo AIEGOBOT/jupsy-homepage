@@ -533,6 +533,42 @@ export const worksItems = [
     href: "https://www.youtube.com/shorts/58UykbqUjsk",
     ariaLabel: "그라나도 에스파다M AI 실사화 영상 열기",
   },
+  {
+    id: "gyeongbuk-educators-ai-workshop",
+    detailSlug: "gyeongbuk-educators-ai-workshop",
+    category: "photography",
+    kind: "image",
+    aspect: "16:9",
+    className: "card-photo",
+    typeLabel: "이미지",
+    title: "경북 교육자 대상 AI 역량강화 강의",
+    imageSrc: "/works/image/gyeongbuk-educators-ai-workshop-thumbnail.webp",
+    imageAlt: "경북 교육자 대상 AI 역량강화 강의 대표 이미지",
+  },
+  {
+    id: "youngsan-ai-webtoon-lecture",
+    detailSlug: "youngsan-ai-webtoon-lecture",
+    category: "photography",
+    kind: "image",
+    aspect: "16:9",
+    className: "card-photo",
+    typeLabel: "이미지",
+    title: "영산대 AI 웹툰 강의",
+    imageSrc: "/works/image/youngsan-ai-webtoon-lecture-thumbnail.webp",
+    imageAlt: "영산대 AI 웹툰 강의 대표 이미지",
+  },
+  {
+    id: "rise-vfx-hackathon-ai-screening",
+    detailSlug: "rise-vfx-hackathon-ai-screening",
+    category: "photography",
+    kind: "image",
+    aspect: "9:16",
+    className: "card-photo",
+    typeLabel: "이미지",
+    title: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영",
+    imageSrc: "/works/image/rise-vfx-hackathon-ai-screening-thumbnail.webp",
+    imageAlt: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 대표 이미지",
+  },
 ];
 
 export const workDetails = [
@@ -1159,6 +1195,138 @@ export const workDetails = [
       { src: "/works/projects/sogalbijjim/sogalbijjim-12.webp", alt: "정성곳간 소갈비찜 상세페이지 12" },
     ],
   },
+  {
+    slug: "gyeongbuk-educators-ai-workshop",
+    itemId: "gyeongbuk-educators-ai-workshop",
+    eyebrow: "이미지 프로젝트",
+    client: "경북테크노파크",
+    brand: "경북 교육자 대상 AI 역량강화 강의",
+    title: "경북 교육자 대상 AI 역량강화 강의",
+    summary:
+      "경북 교육자 대상 AI 역량강화 강의 현장을 기록한 프로젝트로, 현장 분위기와 발표 장면의 집중도를 중심으로 정리한 이미지입니다.",
+    overview: [
+      "강의 현장의 공기와 참여자 반응이 함께 읽히도록 공간감과 인물 중심 구도를 안정적으로 정리했습니다.",
+      "교육 프로그램 소개, 활동 기록, 포트폴리오 아카이브에 바로 사용할 수 있도록 대표 장면을 선별했습니다.",
+    ],
+    credits: [
+      ["Client", "경북테크노파크"],
+      ["Brand", "경북 교육자 대상 AI 역량강화 강의"],
+      ["Format", "강의 기록 / 행사 스틸"],
+      ["Category", "이미지"],
+    ],
+    coverImage: "/works/projects/gyeongbuk-educators-ai-workshop/gyeongbuk-educators-ai-workshop-01.webp",
+    coverAlt: "경북 교육자 대상 AI 역량강화 강의 대표 이미지",
+    gallery: [
+      {
+        src: "/works/projects/gyeongbuk-educators-ai-workshop/gyeongbuk-educators-ai-workshop-01.webp",
+        alt: "경북 교육자 대상 AI 역량강화 강의 1",
+      },
+      {
+        src: "/works/projects/gyeongbuk-educators-ai-workshop/gyeongbuk-educators-ai-workshop-02.webp",
+        alt: "경북 교육자 대상 AI 역량강화 강의 2",
+      },
+      {
+        src: "/works/projects/gyeongbuk-educators-ai-workshop/gyeongbuk-educators-ai-workshop-03.webp",
+        alt: "경북 교육자 대상 AI 역량강화 강의 3",
+      },
+      {
+        src: "/works/projects/gyeongbuk-educators-ai-workshop/gyeongbuk-educators-ai-workshop-04.webp",
+        alt: "경북 교육자 대상 AI 역량강화 강의 4",
+      },
+      {
+        src: "/works/projects/gyeongbuk-educators-ai-workshop/gyeongbuk-educators-ai-workshop-05.webp",
+        alt: "경북 교육자 대상 AI 역량강화 강의 5",
+      },
+    ],
+  },
+  {
+    slug: "youngsan-ai-webtoon-lecture",
+    itemId: "youngsan-ai-webtoon-lecture",
+    eyebrow: "이미지 프로젝트",
+    client: "영산대학교",
+    brand: "영산대 AI 웹툰 강의",
+    title: "영산대 AI 웹툰 강의",
+    summary:
+      "영산대 AI 웹툰 강의 현장을 기록한 프로젝트로, 강의 공간의 무드와 교육 장면의 흐름을 함께 전달할 수 있도록 정리한 이미지입니다.",
+    overview: [
+      "발표 화면과 강연자, 현장 분위기가 한 장면 안에서 자연스럽게 이어지도록 시선 흐름을 정리했습니다.",
+      "교육 프로그램 소개와 강의 아카이브에 모두 활용할 수 있도록 대표 장면을 중심으로 구성했습니다.",
+    ],
+    credits: [
+      ["Client", "영산대학교"],
+      ["Brand", "영산대 AI 웹툰 강의"],
+      ["Format", "강의 기록 / 행사 스틸"],
+      ["Category", "이미지"],
+    ],
+    coverImage: "/works/projects/youngsan-ai-webtoon-lecture/youngsan-ai-webtoon-lecture-01.webp",
+    coverAlt: "영산대 AI 웹툰 강의 대표 이미지",
+    gallery: [
+      {
+        src: "/works/projects/youngsan-ai-webtoon-lecture/youngsan-ai-webtoon-lecture-01.webp",
+        alt: "영산대 AI 웹툰 강의 1",
+      },
+      {
+        src: "/works/projects/youngsan-ai-webtoon-lecture/youngsan-ai-webtoon-lecture-02.webp",
+        alt: "영산대 AI 웹툰 강의 2",
+      },
+      {
+        src: "/works/projects/youngsan-ai-webtoon-lecture/youngsan-ai-webtoon-lecture-03.webp",
+        alt: "영산대 AI 웹툰 강의 3",
+      },
+      {
+        src: "/works/projects/youngsan-ai-webtoon-lecture/youngsan-ai-webtoon-lecture-04.webp",
+        alt: "영산대 AI 웹툰 강의 4",
+      },
+    ],
+  },
+  {
+    slug: "rise-vfx-hackathon-ai-screening",
+    itemId: "rise-vfx-hackathon-ai-screening",
+    eyebrow: "이미지 프로젝트",
+    client: "제주한라대학교",
+    brand: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영",
+    title: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영",
+    summary:
+      "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 현장을 기록한 프로젝트로, 현장 토크와 행사 무드를 세로 구도 안에서 집중감 있게 정리한 이미지입니다.",
+    overview: [
+      "연사와 참가자, 현장 배경이 함께 읽히도록 세로형 장면의 밀도를 유지하면서 대표 순간을 선별했습니다.",
+      "행사 소개, 교육 성과 공유, 포트폴리오 기록에 바로 사용할 수 있도록 현장 분위기가 분명한 컷으로 정리했습니다.",
+    ],
+    credits: [
+      ["Client", "제주한라대학교"],
+      ["Brand", "RISE 사업특수효과(VFX) 해커톤 및 AI 상영"],
+      ["Format", "행사 기록 / 패널 토크 스틸"],
+      ["Category", "이미지"],
+    ],
+    coverImage: "/works/projects/rise-vfx-hackathon-ai-screening/rise-vfx-hackathon-ai-screening-01.webp",
+    coverAlt: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 대표 이미지",
+    gallery: [
+      {
+        src: "/works/projects/rise-vfx-hackathon-ai-screening/rise-vfx-hackathon-ai-screening-01.webp",
+        alt: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 1",
+      },
+      {
+        src: "/works/projects/rise-vfx-hackathon-ai-screening/rise-vfx-hackathon-ai-screening-02.webp",
+        alt: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 2",
+      },
+      {
+        src: "/works/projects/rise-vfx-hackathon-ai-screening/rise-vfx-hackathon-ai-screening-03.webp",
+        alt: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 3",
+      },
+      {
+        src: "/works/projects/rise-vfx-hackathon-ai-screening/rise-vfx-hackathon-ai-screening-04.webp",
+        alt: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 4",
+      },
+      {
+        src: "/works/projects/rise-vfx-hackathon-ai-screening/rise-vfx-hackathon-ai-screening-05.webp",
+        alt: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 5",
+      },
+      {
+        src: "/works/projects/rise-vfx-hackathon-ai-screening/rise-vfx-hackathon-ai-screening-06.webp",
+        alt: "RISE 사업특수효과(VFX) 해커톤 및 AI 상영 6",
+      },
+    ],
+  },
 ];
 
 export function getWorkDetailBySlug(slug) {
@@ -1174,5 +1342,12 @@ export function getWorkDetailBySlug(slug) {
     return null;
   }
 
-  return { ...item, ...detail };
+  const sortedGallery = [...detail.gallery].sort((left, right) =>
+    left.src.localeCompare(right.src, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    }),
+  );
+
+  return { ...item, ...detail, gallery: sortedGallery };
 }

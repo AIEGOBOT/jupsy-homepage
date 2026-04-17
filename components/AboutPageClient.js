@@ -73,11 +73,14 @@ export default function AboutPageClient() {
               <div className="about-hero-grid">
                 <div className="about-hero-copy">
                   <h1>
-                    <span>Throw the plate</span>
+                    <span>AI Creative</span>
                     <br />
-                    <span>Start the feast</span>
+                    <span>That Ships</span>
                   </h1>
-                  <p>JUPSY는 아이디어를 넘어, 현실에서 작동하는 결과물을 만들어냅니다.</p>
+                  <p>
+                    JUPSY는 AI 이미지 제작, AI 영상 제작, 상세페이지 제작을 실제 브랜드 운영과 캠페인 성과에 연결하는
+                    크리에이티브 스튜디오입니다.
+                  </p>
                 </div>
                 <div className="about-hero-art" aria-hidden="true">
                   <div className="mesh"></div>
@@ -94,7 +97,8 @@ export default function AboutPageClient() {
               <div className="about-summary-copy">
                 <p>
                   접시는 빠른 제작, 비용 효율, 실무형 결과물을 중심으로 브랜드 비주얼을 설계합니다. 캠페인 키비주얼,
-                  상세페이지 이미지, SNS용 모션 클립, 제품 소개 영상까지 목적에 맞는 형태로 연결합니다.
+                  상세페이지 이미지, 제품 소개 비주얼, SNS용 모션 클립, 브랜드 영상까지 검색 유입과 실제 전환에 맞는
+                  형태로 연결합니다.
                 </p>
               </div>
               <div className="about-stats">

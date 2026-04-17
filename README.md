@@ -6,6 +6,16 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 
 팀원 확인용 업데이트 소식입니다. 커밋/푸시 전 아래 형식으로 최신 항목을 가장 위에 추가합니다.
 
+### 작업 트리 메모 - 2026-04-17
+
+아래 항목은 아직 버전/커밋으로 정리되기 전, 현재 작업 파일 기준 메모입니다.
+
+- 르플레르 구강 스프레이 상세페이지 갤러리 이미지를 파일명 기준 숫자 순서로 다시 정렬해도 상세 페이지 노출 순서가 안정적으로 유지되도록 보정했습니다.
+- 기본 공유 썸네일을 정적 파일 대신 Next.js 동적 OG 이미지 라우트(`/opengraph-image`, `/twitter-image`) 기준으로 연결했습니다.
+- 홈/소개/작업 상세 페이지의 SEO 메타데이터와 구조화 데이터(JSON-LD)를 보강했습니다.
+- 모바일 `WORKS` 그리드에서는 카드 모션과 영상 자동재생을 끄도록 조정했습니다.
+- `WORKS` 맨 마지막에 강의/행사 이미지 3건을 추가하고, 각 항목이 내부 상세 페이지로 열리도록 연결했습니다.
+
 ### Build 0.2.0 - 2026-04-13
 
 이번 업데이트에는 아래 내용이 반영되었습니다.
@@ -60,8 +70,10 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - `app/layout.js`: 루트 레이아웃, 메타데이터, 폰트 로드
 - `app/page.js`: 홈 페이지 엔트리
 - `app/about/page.js`: 소개 페이지 엔트리
+- `app/opengraph-image.js`: 기본 Open Graph 공유 이미지 생성 라우트
 - `app/robots.js`: robots.txt 생성
 - `app/sitemap.js`: sitemap.xml 생성
+- `app/twitter-image.js`: 기본 Twitter/X 공유 이미지 생성 라우트
 - `app/works/works-data.js`: 필터, 홈 포트폴리오 데이터, 상세 페이지 데이터
 - `app/works/[slug]/page.js`: 작업 상세 라우트
 - `app/api/inquiry/route.js`: 의뢰 폼 제출을 디스코드 웹훅 또는 SMTP 메일로 전달하는 API
@@ -70,12 +82,14 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - `components/HomePageClient.js`: 홈 UI, 히어로, 클라이언트 영역, 작품 그리드, 모달 연결
 - `components/AboutPageClient.js`: 소개 페이지 UI와 모달 연결
 - `components/ContactModal.js`: 홈과 소개 페이지에서 공통으로 쓰는 의뢰 모달
+- `components/JsonLdScript.js`: 구조화 데이터(JSON-LD) 출력 헬퍼
 - `components/SiteHeader.js`: 상단 네비게이션과 고정 텍스트 링크
 - `components/SiteFooter.js`: 푸터와 연락처 앵커
 - `components/WorkDetailPageClient.js`: 작업 상세 히어로와 갤러리 UI
 - `.env.example`: 로컬 환경 변수 예시
 - `lib/analytics.js`: 프론트 이벤트 추적 헬퍼
 - `lib/siteMetadata.js`: 공통 SEO 메타데이터와 사이트 URL 헬퍼
+- `lib/structuredData.js`: Organization, WebSite, Breadcrumb, CreativeWork JSON-LD 생성 헬퍼
 - `public/clients/`: 클라이언트 로고 에셋
 - `public/home/`: 홈 카드용 에셋
 - `public/works/image/`: 이미지 작업 대표 이미지
@@ -90,6 +104,8 @@ Next.js App Router 기반의 JUPSY 스튜디오 홈페이지입니다.
 - 프로덕션 빌드 확인: `npm run build`
 - 프로덕션 서버 실행: `npm run start`
 - 커밋/푸시 전 업데이트 형식 미리보기: `npm run update:preview`
+
+현재 `npm run dev`는 Windows 한글 경로에서의 Turbopack 불안정성을 피하기 위해 `webpack` 모드로 실행하도록 설정되어 있습니다.
 
 기본 로컬 주소:
 
@@ -147,12 +163,15 @@ Gmail SMTP를 사용할 때의 기본 예시는 아래와 같습니다.
 - `9:16` 작업은 홈 그리드에서 2행을 차지하고, 나머지 비율은 1행만 사용합니다.
 - 큰 데스크톱에서는 홈 그리드의 행 높이를 추가로 키워 세로 카드가 너무 납작해 보이지 않도록 조정합니다.
 - 영상 작업은 로컬 `WEBM` 미리보기를 사용하고, 홈 그리드에서는 화면에 보이는 카드만 재생합니다.
+- 모바일에서는 성능 부담을 줄이기 위해 홈 그리드 영상 미리보기를 자동재생하지 않습니다.
 - 홈 그리드의 영상 카드는 클릭 시 외부 이동 대신 모달에서 바로 재생합니다.
 - 이미지 작업은 `detailSlug`가 있으면 내부 상세 페이지로 이동합니다.
 - 내부 상세 페이지는 `app/works/works-data.js`의 `workDetails` 데이터 기준으로 정적 생성됩니다.
 - 작업 상세 페이지는 전체 화면 히어로 이미지와 중앙 타이틀 오버레이, 동일 폭 갤러리로 구성됩니다.
 - 상세 히어로에서는 이미지 자체 확대 모션 없이 텍스트 오버레이만 스크롤에 따라 움직입니다.
+- 작업 상세 페이지 갤러리는 렌더 전에 파일 경로를 숫자 기준으로 정렬해 `...-02`, `...-10` 같은 파일명이 섞여 있어도 순서가 어긋나지 않도록 처리합니다.
 - `app/layout.js`, `app/robots.js`, `app/sitemap.js`를 통해 기본 SEO 메타, robots, sitemap을 제공합니다.
+- 기본 공유 이미지는 `app/opengraph-image.js`와 `app/twitter-image.js`에서 동적으로 생성하며, 기본 OG 경로는 `/opengraph-image`를 사용합니다.
 - `@vercel/analytics`로 페이지뷰가 자동 수집되며, 문의 오픈/문의 제출/영상 오픈 이벤트를 추적합니다.
 - 소개 페이지는 홈과 유사하게 넓게 펼쳐지는 히어로와 텍스트 중심 섹션 구조를 사용합니다.
 - 팀 섹션은 프로필 이미지 없이 텍스트 중심 카드 레이아웃입니다.
@@ -169,6 +188,8 @@ Gmail SMTP를 사용할 때의 기본 예시는 아래와 같습니다.
 - 클라이언트 로고를 교체할 때는 `public/clients/` 에셋과 `components/HomePageClient.js`의 `clientLogos` 목록을 같이 맞춥니다.
 - 상세 페이지 에셋은 `public/works/projects/<project-slug>/` 아래에 둡니다.
 - 현재 상세 갤러리 이미지는 배포 용량과 대역폭을 고려해 `webp` 위주로 관리합니다.
+- 상세 갤러리 파일명은 가능하면 `project-01.webp`, `project-02.webp`처럼 0 패딩 숫자 규칙을 유지합니다.
+- 강의/행사 기록 이미지처럼 홈 카드와 상세 페이지를 함께 쓰는 작업은 `public/works/image/` 썸네일과 `public/works/projects/<slug>/` 상세 에셋을 같이 맞춥니다.
 - 홈 그리드 썸네일은 `public/works/image/` 아래에 `webp`로 두고, 카드 표시 크기를 고려해 긴 변 기준 `1600px` 이하로 리사이즈합니다.
 - 파일명은 가능하면 단순하고 ASCII 친화적으로 유지합니다.
 - 포트폴리오 미디어는 가벼운 웹용 이미지와 `WEBM` 미리보기를 우선 사용합니다.
