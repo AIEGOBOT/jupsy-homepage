@@ -1273,10 +1273,6 @@ export const workDetails = [
         src: "/works/projects/youngsan-ai-webtoon-lecture/youngsan-ai-webtoon-lecture-03.webp",
         alt: "영산대 AI 웹툰 강의 3",
       },
-      {
-        src: "/works/projects/youngsan-ai-webtoon-lecture/youngsan-ai-webtoon-lecture-04.webp",
-        alt: "영산대 AI 웹툰 강의 4",
-      },
     ],
   },
   {
