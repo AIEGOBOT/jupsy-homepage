@@ -4,7 +4,7 @@ import { worksItems } from "./works/works-data";
 import { createHomePageStructuredData } from "../lib/structuredData";
 import { defaultKeywords, defaultOgImage, siteDescription, siteName } from "../lib/siteMetadata";
 
-const homeTitle = "AI 이미지 제작 · AI 영상 제작 · 상세페이지 제작 포트폴리오";
+const homeTitle = "AI 이미지 제작 · AI 영상 제작 · 상세페이지 제작";
 
 export const metadata = {
   title: homeTitle,
