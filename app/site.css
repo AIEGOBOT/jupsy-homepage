@@ -650,6 +650,11 @@ a {
   transform: translateY(-1px);
 }
 
+.home-works-filter-pill:focus-visible {
+  outline: 2px solid rgba(15, 23, 45, 0.26);
+  outline-offset: 3px;
+}
+
 .home-works-filter-pill.is-active {
   background: #111723;
   border-color: #111723;
@@ -868,6 +873,12 @@ a {
   line-height: 1;
   cursor: pointer;
   z-index: 2;
+}
+
+.video-preview-modal-close:focus-visible,
+.video-preview-modal-fallback a:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 3px;
 }
 
 .video-preview-modal-frame {
@@ -2256,6 +2267,16 @@ a {
   z-index: 3;
 }
 
+.contact-modal-close:focus-visible,
+.contact-field input:focus-visible,
+.contact-field select:focus-visible,
+.contact-field textarea:focus-visible,
+.ghost-btn:focus-visible,
+.contact-form-actions .contact-btn:focus-visible {
+  outline: 2px solid rgba(74, 111, 184, 0.28);
+  outline-offset: 3px;
+}
+
 .contact-modal-layout {
   display: grid;
   grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
@@ -2854,9 +2875,13 @@ a {
   }
 
   .home-work-meta {
-    left: auto;
-    right: 14px;
-    bottom: 14px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    justify-items: start;
+    gap: 5px;
+    opacity: 1;
+    transform: none;
   }
 
   .home-work-link,
@@ -2879,19 +2904,37 @@ a {
     transform: none;
   }
 
+  .home-work-link::after,
   .home-work-link:hover::after,
   .home-work-link:focus-visible::after {
-    opacity: 0;
+    opacity: 1;
+    background: linear-gradient(180deg, rgba(9, 12, 18, 0) 28%, rgba(9, 12, 18, 0.72) 100%);
   }
 
+  .home-work-link .home-work-meta,
   .home-work-link:hover .home-work-meta,
   .home-work-link:focus-visible .home-work-meta {
-    opacity: 0;
-    transform: translateY(10px);
+    opacity: 1;
+    transform: none;
+  }
+
+  .home-work-type {
+    min-height: 22px;
+    padding: 0 7px;
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
   }
 
   .home-work-meta h3 {
-    font-size: 1.02rem;
+    max-width: 100%;
+    font-size: 0.74rem;
+    line-height: 1.22;
+    letter-spacing: -0.03em;
+    text-align: left;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   .home-works-footer {
@@ -3106,6 +3149,26 @@ a {
 
   .contact-form {
     gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-slide,
+  .home-clients-track-forward,
+  .home-clients-track-reverse,
+  .clients-track,
+  .mosaic-card {
+    animation: none !important;
+  }
+
+  .home-work-link,
+  .home-work-media img,
+  .home-work-media video,
+  .home-works-filter-pill,
+  .hero-primary-btn,
+  .hero-secondary-btn,
+  .footer-social-link {
+    transition: none !important;
   }
 }
 

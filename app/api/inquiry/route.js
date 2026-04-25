@@ -9,10 +9,64 @@ const inquiryTypeMap = {
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const MIN_FORM_FILL_MS = 1500;
+const DISCORD_FIELD_VALUE_MAX_LENGTH = 1000;
+const fieldLengthLimits = {
+  contact: 120,
+  companyName: 120,
+  budget: 80,
+  deadline: 80,
+  pagePath: 240,
+  message: 3000,
+  companyWebsite: 240,
+};
 const inquiryRateLimitStore = new Map();
 
 function valueOrFallback(value) {
   return value?.trim() ? value.trim() : "-";
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function truncateValue(value, maxLength) {
+  const stringValue = String(value || "").trim();
+
+  if (stringValue.length <= maxLength) {
+    return stringValue;
+  }
+
+  return `${stringValue.slice(0, Math.max(maxLength - 3, 0))}...`;
+}
+
+function normalizeTextField(value, maxLength) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return truncateValue(value, maxLength);
+}
+
+function normalizeInquiryType(value) {
+  return Object.prototype.hasOwnProperty.call(inquiryTypeMap, value) ? value : "general";
+}
+
+function normalizeInquiryPayload(payload) {
+  return {
+    inquiryType: normalizeInquiryType(payload.inquiryType),
+    contact: normalizeTextField(payload.contact, fieldLengthLimits.contact),
+    companyName: normalizeTextField(payload.companyName, fieldLengthLimits.companyName),
+    budget: normalizeTextField(payload.budget, fieldLengthLimits.budget),
+    deadline: normalizeTextField(payload.deadline, fieldLengthLimits.deadline),
+    pagePath: normalizeTextField(payload.pagePath, fieldLengthLimits.pagePath),
+    message: normalizeTextField(payload.message, fieldLengthLimits.message),
+    companyWebsite: normalizeTextField(payload.companyWebsite, fieldLengthLimits.companyWebsite),
+    formStartedAt: typeof payload.formStartedAt === "number" ? payload.formStartedAt : null,
+  };
+}
+
+function isEmailAddress(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function getRequestIp(request) {
@@ -61,7 +115,7 @@ async function sendDiscordWebhook(payload) {
 
   const fields = buildInquiryLines(payload).map(([name, value]) => ({
     name,
-    value: String(value),
+    value: truncateValue(value, DISCORD_FIELD_VALUE_MAX_LENGTH) || "-",
   }));
 
   const response = await fetch(webhookUrl, {
@@ -118,7 +172,7 @@ async function sendEmail(payload) {
   await transporter.sendMail({
     to,
     from,
-    replyTo: payload.contact?.trim() || undefined,
+    replyTo: isEmailAddress(payload.contact) ? payload.contact : undefined,
     subject: `[JUPSY] ${inquiryTypeMap[payload.inquiryType] || "새 의뢰"} 접수`,
     text,
   });
@@ -126,12 +180,65 @@ async function sendEmail(payload) {
   return true;
 }
 
-export async function POST(request) {
+async function sendToInquiryChannel(name, sender) {
   try {
-    const payload = await request.json();
+    return {
+      name,
+      sent: await sender(),
+      error: null,
+    };
+  } catch (error) {
+    return {
+      name,
+      sent: false,
+      error,
+    };
+  }
+}
+
+function logInquiryChannelErrors(results) {
+  for (const result of results) {
+    if (!result.error) {
+      continue;
+    }
+
+    console.error(`[inquiry] ${result.name} delivery failed`, {
+      message: result.error.message,
+    });
+  }
+}
+
+async function trackInquirySubmitted(payload, sentChannels) {
+  try {
+    await track("Inquiry Submitted", {
+      inquiryType: inquiryTypeMap[payload.inquiryType] || payload.inquiryType || "-",
+      pagePath: valueOrFallback(payload.pagePath),
+      sentChannels: sentChannels.join(","),
+    });
+  } catch (error) {
+    console.error("[inquiry] analytics tracking failed", {
+      message: error.message,
+    });
+  }
+}
+
+export async function POST(request) {
+  let rawPayload;
+
+  try {
+    rawPayload = await request.json();
+  } catch {
+    return Response.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 });
+  }
+
+  try {
+    if (!isPlainObject(rawPayload)) {
+      return Response.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+
+    const payload = normalizeInquiryPayload(rawPayload);
     const ip = getRequestIp(request);
-    const submittedTooFast =
-      typeof payload.formStartedAt === "number" && Date.now() - payload.formStartedAt < MIN_FORM_FILL_MS;
+    const submittedTooFast = payload.formStartedAt !== null && Date.now() - payload.formStartedAt < MIN_FORM_FILL_MS;
 
     if (payload.companyWebsite?.trim() || submittedTooFast) {
       return Response.json({ ok: true, ignored: true });
@@ -145,17 +252,25 @@ export async function POST(request) {
       return Response.json({ error: "연락처와 의뢰 내용은 필수입니다." }, { status: 400 });
     }
 
-    const sentChannels = [];
+    const channelResults = await Promise.all([
+      sendToInquiryChannel("discord", () => sendDiscordWebhook(payload)),
+      sendToInquiryChannel("email", () => sendEmail(payload)),
+    ]);
+    const sentChannels = channelResults.filter((result) => result.sent).map((result) => result.name);
+    const failedChannels = channelResults.filter((result) => result.error).map((result) => result.name);
 
-    if (await sendDiscordWebhook(payload)) {
-      sentChannels.push("discord");
-    }
-
-    if (await sendEmail(payload)) {
-      sentChannels.push("email");
-    }
+    logInquiryChannelErrors(channelResults);
 
     if (sentChannels.length === 0) {
+      if (failedChannels.length > 0) {
+        return Response.json(
+          {
+            error: "의뢰 접수 채널 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+          },
+          { status: 500 }
+        );
+      }
+
       return Response.json(
         {
           error:
@@ -165,14 +280,14 @@ export async function POST(request) {
       );
     }
 
-    await track("Inquiry Submitted", {
-      inquiryType: inquiryTypeMap[payload.inquiryType] || payload.inquiryType || "-",
-      pagePath: valueOrFallback(payload.pagePath),
-      sentChannels: sentChannels.join(","),
+    await trackInquirySubmitted(payload, sentChannels);
+
+    return Response.json({ ok: true, sentChannels, failedChannels });
+  } catch (error) {
+    console.error("[inquiry] request handling failed", {
+      message: error.message,
     });
 
-    return Response.json({ ok: true, sentChannels });
-  } catch (error) {
     return Response.json(
       {
         error: error.message || "의뢰 접수 처리 중 오류가 발생했습니다.",

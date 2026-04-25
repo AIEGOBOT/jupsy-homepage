@@ -1,4 +1,4 @@
-import { getSiteUrl } from "../lib/siteMetadata";
+import { getSiteUrl, toAbsoluteUrl } from "../lib/siteMetadata";
 
 export default function robots() {
   const siteUrl = getSiteUrl();
@@ -10,7 +10,7 @@ export default function robots() {
         allow: "/",
       },
     ],
-    sitemap: `${siteUrl}/sitemap.xml`,
+    sitemap: toAbsoluteUrl("/sitemap.xml"),
     host: siteUrl,
   };
 }
