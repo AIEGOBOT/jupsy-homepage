@@ -3126,11 +3126,23 @@ a {
   }
 
   .contact-modal {
-    padding: 12px;
+    align-items: start;
+    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
   }
 
   .contact-modal-panel {
-    max-height: calc(100vh - 24px);
+    width: min(100%, 430px);
+    max-height: calc(100vh - 16px);
+    max-height: calc(100dvh - 16px);
+    border-radius: 18px;
+  }
+
+  .contact-modal-close {
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    font-size: 1.35rem;
   }
 
   .contact-modal-layout {
@@ -3139,16 +3151,73 @@ a {
   }
 
   .contact-modal-aside {
-    min-height: 220px;
-    padding: 26px 20px 22px;
+    display: none;
   }
 
   .contact-modal-main {
-    padding: 24px 18px 18px;
+    padding: 16px 12px 12px;
+  }
+
+  .contact-modal-head {
+    padding-right: 38px;
+  }
+
+  .contact-modal-head h2 {
+    margin-top: 5px;
+    font-size: 1.42rem;
+    line-height: 1;
+  }
+
+  .contact-modal-head p {
+    display: none;
   }
 
   .contact-form {
-    gap: 12px;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .contact-field {
+    gap: 4px;
+  }
+
+  .contact-field span {
+    font-size: 0.74rem;
+  }
+
+  .contact-field input,
+  .contact-field select,
+  .contact-field textarea {
+    padding: 9px 11px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+  }
+
+  .contact-field textarea {
+    min-height: 72px;
+  }
+
+  .contact-form-status {
+    padding: 9px 11px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+  }
+
+  .contact-form-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .contact-form-actions .ghost-btn,
+  .contact-form-actions .contact-btn {
+    width: 100%;
+    min-height: 42px;
+    border-radius: 10px;
+  }
+
+  .contact-form-actions .contact-btn {
+    padding: 0 12px;
   }
 }
 

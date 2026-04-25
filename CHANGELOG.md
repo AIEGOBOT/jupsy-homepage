@@ -13,6 +13,11 @@
 - Notes:
 ```
 
+## Build 0.4.1 - 2026-04-25
+
+- Changed: 모바일 `의뢰하기` 모달에서 장식 패널을 숨기고 입력칸, 제목, 버튼 간격을 줄여 화면 위아래가 덜 잘리도록 개선했습니다.
+- Notes: `npm run lint`와 `npm run build`를 통과했습니다.
+
 ## Build 0.4.0 - 2026-04-25
 
 - Added: 작업자용 `AGENTS.md`, 구조 설명 `ARCHITECTURE.md`, 운영 안전 규칙 `SECURITY.md`를 추가했습니다.
